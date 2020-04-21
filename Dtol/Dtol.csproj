@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20191024011104_updateTableT.cs" />
+    <Compile Remove="Migrations\20191024011203_updateTableT.cs" />
+    <Compile Remove="Migrations\20191024011310_updateTEST.cs" />
+    <Compile Remove="Migrations\20191109082653_changeclo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="bin\Debug\netcoreapp2.2\Dtol.deps.json" />
+    <Content Include="bin\Debug\netcoreapp2.2\Dtol.runtimeconfig.dev.json" />
+    <Content Include="bin\Debug\netcoreapp2.2\Dtol.runtimeconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="8.1.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="bin\Release\netcoreapp2.2\" />
+    <Folder Include="Config\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="bin\Debug\netcoreapp2.2\Dtol.dll" />
+    <None Include="bin\Debug\netcoreapp2.2\Dtol.pdb" />
+  </ItemGroup>
+
+</Project>

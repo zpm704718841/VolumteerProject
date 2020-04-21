@@ -1,0 +1,124 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>bin\Debug\netcoreapp2.2\</OutputPath>
+    <DocumentationFile>bin\Debug\netcoreapp2.2\IntellVolunteer.xml</DocumentationFile>
+    <NoWarn>1701;1702;1591</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>bin\Release\netcoreapp2.2\</OutputPath>
+    <DocumentationFile>bin\Release\netcoreapp2.2\IntellVolunteer.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="obj\Debug\netcoreapp2.2\IntellVolunteer.AssemblyInfo.cs" />
+    <Compile Include="obj\Debug\netcoreapp2.2\IntellVolunteer.RazorAssemblyInfo.cs" />
+    <Compile Include="obj\Debug\netcoreapp2.2\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Include="obj\Debug\netcoreapp2.2\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Include="obj\Debug\netcoreapp2.2\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="bin\Debug\netcoreapp2.2\netcoreapp2.2\IntellVolunteer.deps.json" />
+    <Content Include="bin\Debug\netcoreapp2.2\netcoreapp2.2\IntellVolunteer.runtimeconfig.dev.json" />
+    <Content Include="bin\Debug\netcoreapp2.2\netcoreapp2.2\IntellVolunteer.runtimeconfig.json" />
+    <Content Include="bin\Debug\netcoreapp2.2\netcoreapp2.2\IntellVolunteer.xml" />
+    <Content Include="bin\Debug\netcoreapp2.2\netcoreapp2.2\ViewModel.xml" />
+    <Content Include="bin\Release\netcoreapp2.2\IntellVolunteer.xml" />
+    <Content Include="bin\Release\netcoreapp2.2\netcoreapp2.2\IntellVolunteer.deps.json" />
+    <Content Include="bin\Release\netcoreapp2.2\netcoreapp2.2\IntellVolunteer.runtimeconfig.dev.json" />
+    <Content Include="bin\Release\netcoreapp2.2\netcoreapp2.2\IntellVolunteer.runtimeconfig.json" />
+    <Content Include="bin\Release\netcoreapp2.2\netcoreapp2.2\IntellVolunteer.xml" />
+    <Content Include="bin\Release\netcoreapp2.2\netcoreapp2.2\ViewModel.xml" />
+    <Content Include="obj\project.assets.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.4.0" />
+    <PackageReference Include="Autofac.Extras.DynamicProxy" Version="4.5.0" />
+    <PackageReference Include="AutofacSerilogIntegration" Version="2.0.0" />
+    <PackageReference Include="automapper" Version="8.1.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="6.1.1" />
+    <PackageReference Include="FluentValidation" Version="8.5.0" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="8.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.6" />
+    <PackageReference Include="Microsoft.AspNetCore.HttpsPolicy" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.1.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.9" />
+    <PackageReference Include="Serilog" Version="2.8.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="4.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="bin\Debug\netcoreapp2.2\netcoreapp2.2\Dto.IRepository.dll" />
+    <None Include="bin\Debug\netcoreapp2.2\netcoreapp2.2\Dto.IRepository.pdb" />
+    <None Include="bin\Debug\netcoreapp2.2\netcoreapp2.2\Dto.IService.dll" />
+    <None Include="bin\Debug\netcoreapp2.2\netcoreapp2.2\Dto.IService.pdb" />
+    <None Include="bin\Debug\netcoreapp2.2\netcoreapp2.2\Dto.Repository.dll" />
+    <None Include="bin\Debug\netcoreapp2.2\netcoreapp2.2\Dto.Repository.pdb" />
+    <None Include="bin\Debug\netcoreapp2.2\netcoreapp2.2\Dto.Service.dll" />
+    <None Include="bin\Debug\netcoreapp2.2\netcoreapp2.2\Dto.Service.pdb" />
+    <None Include="bin\Debug\netcoreapp2.2\netcoreapp2.2\Dtol.dll" />
+    <None Include="bin\Debug\netcoreapp2.2\netcoreapp2.2\Dtol.pdb" />
+    <None Include="bin\Debug\netcoreapp2.2\netcoreapp2.2\IntellVolunteer.dll" />
+    <None Include="bin\Debug\netcoreapp2.2\netcoreapp2.2\IntellVolunteer.pdb" />
+    <None Include="bin\Debug\netcoreapp2.2\netcoreapp2.2\SystemFilter.dll" />
+    <None Include="bin\Debug\netcoreapp2.2\netcoreapp2.2\SystemFilter.pdb" />
+    <None Include="bin\Debug\netcoreapp2.2\netcoreapp2.2\ViewModel.dll" />
+    <None Include="bin\Debug\netcoreapp2.2\netcoreapp2.2\ViewModel.pdb" />
+    <None Include="bin\Release\netcoreapp2.2\netcoreapp2.2\Dto.IRepository.dll" />
+    <None Include="bin\Release\netcoreapp2.2\netcoreapp2.2\Dto.IRepository.pdb" />
+    <None Include="bin\Release\netcoreapp2.2\netcoreapp2.2\Dto.IService.dll" />
+    <None Include="bin\Release\netcoreapp2.2\netcoreapp2.2\Dto.IService.pdb" />
+    <None Include="bin\Release\netcoreapp2.2\netcoreapp2.2\Dto.Repository.dll" />
+    <None Include="bin\Release\netcoreapp2.2\netcoreapp2.2\Dto.Repository.pdb" />
+    <None Include="bin\Release\netcoreapp2.2\netcoreapp2.2\Dto.Service.dll" />
+    <None Include="bin\Release\netcoreapp2.2\netcoreapp2.2\Dto.Service.pdb" />
+    <None Include="bin\Release\netcoreapp2.2\netcoreapp2.2\Dtol.dll" />
+    <None Include="bin\Release\netcoreapp2.2\netcoreapp2.2\Dtol.pdb" />
+    <None Include="bin\Release\netcoreapp2.2\netcoreapp2.2\IntellVolunteer.dll" />
+    <None Include="bin\Release\netcoreapp2.2\netcoreapp2.2\IntellVolunteer.pdb" />
+    <None Include="bin\Release\netcoreapp2.2\netcoreapp2.2\SystemFilter.dll" />
+    <None Include="bin\Release\netcoreapp2.2\netcoreapp2.2\SystemFilter.pdb" />
+    <None Include="bin\Release\netcoreapp2.2\netcoreapp2.2\ViewModel.dll" />
+    <None Include="bin\Release\netcoreapp2.2\netcoreapp2.2\ViewModel.pdb" />
+    <None Include="obj\Debug\netcoreapp2.2\IntellVolunteer.AssemblyInfoInputs.cache" />
+    <None Include="obj\Debug\netcoreapp2.2\IntellVolunteer.assets.cache" />
+    <None Include="obj\Debug\netcoreapp2.2\IntellVolunteer.csproj.CoreCompileInputs.cache" />
+    <None Include="obj\Debug\netcoreapp2.2\IntellVolunteer.csprojAssemblyReference.cache" />
+    <None Include="obj\Debug\netcoreapp2.2\IntellVolunteer.RazorAssemblyInfo.cache" />
+    <None Include="obj\IntellVolunteer.csproj.nuget.cache" />
+    <None Include="obj\IntellVolunteer.csproj.nuget.g.props" />
+    <None Include="obj\IntellVolunteer.csproj.nuget.g.targets" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Dto.IRepository\Dto.IRepository.csproj" />
+    <ProjectReference Include="..\Dto.IService\Dto.IService.csproj" />
+    <ProjectReference Include="..\Dto.Repository\Dto.Repository.csproj" />
+    <ProjectReference Include="..\Dtol\Dtol.csproj" />
+    <ProjectReference Include="..\Service\Dto.Service.csproj" />
+    <ProjectReference Include="..\SystemFilter\SystemFilter.csproj" />
+    <ProjectReference Include="..\ViewModel\ViewModel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

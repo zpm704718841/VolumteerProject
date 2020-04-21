@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="8.1.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="6.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Dto.IRepository\Dto.IRepository.csproj" />
+    <ProjectReference Include="..\Dto.IService\Dto.IService.csproj" />
+    <ProjectReference Include="..\Dtol\Dtol.csproj" />
+    <ProjectReference Include="..\ViewModel\ViewModel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="AutoMapper\UserMapper\RoleResponseMapper\" />
+    <Folder Include="AutoMapper\VolunteerActivityMapper\ActivityMapperResponseMapper\" />
+  </ItemGroup>
+
+</Project>

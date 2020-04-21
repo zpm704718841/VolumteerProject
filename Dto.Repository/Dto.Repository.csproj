@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="bin\Debug\netcoreapp2.2\Dto.Repository.deps.json" />
+    <Content Include="bin\Debug\netcoreapp2.2\ViewModel.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="bin\Debug\netcoreapp2.2\Dto.IRepository.dll" />
+    <None Include="bin\Debug\netcoreapp2.2\Dto.IRepository.pdb" />
+    <None Include="bin\Debug\netcoreapp2.2\Dto.Repository.dll" />
+    <None Include="bin\Debug\netcoreapp2.2\Dto.Repository.pdb" />
+    <None Include="bin\Debug\netcoreapp2.2\Dtol.dll" />
+    <None Include="bin\Debug\netcoreapp2.2\Dtol.pdb" />
+    <None Include="bin\Debug\netcoreapp2.2\ViewModel.dll" />
+    <None Include="bin\Debug\netcoreapp2.2\ViewModel.pdb" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Dto.IRepository\Dto.IRepository.csproj" />
+    <ProjectReference Include="..\Dtol\Dtol.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="bin\Release\netcoreapp2.2\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DapperExtensions" Version="1.6.3" />
+  </ItemGroup>
+
+</Project>
