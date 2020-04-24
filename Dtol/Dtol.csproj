@@ -9,6 +9,12 @@
     <Compile Remove="Migrations\20191024011203_updateTableT.cs" />
     <Compile Remove="Migrations\20191024011310_updateTEST.cs" />
     <Compile Remove="Migrations\20191109082653_changeclo.cs" />
+    <Compile Remove="Migrations\20200421084855_keytype.cs" />
+    <Compile Remove="Migrations\20200421084855_keytype.Designer.cs" />
+    <Compile Remove="Migrations\20200421085207_remove.cs" />
+    <Compile Remove="Migrations\20200421085207_remove.Designer.cs" />
+    <Compile Remove="Migrations\20200421125511_keycannull.cs" />
+    <Compile Remove="Migrations\20200421125511_keycannull.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,6 +31,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.2.0" />
+    <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="2.0.48" />
   </ItemGroup>
 
   <ItemGroup>

@@ -4,14 +4,16 @@ using Dtol;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Dtol.Migrations
 {
     [DbContext(typeof(DtolContext))]
-    partial class DtolContextModelSnapshot : ModelSnapshot
+    [Migration("20200421085440_rebuildtale")]
+    partial class rebuildtale
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,9 +66,9 @@ namespace Dtol.Migrations
 
                     b.Property<DateTime?>("CreateaDate");
 
-                    b.Property<DateTime?>("DutyEndTime");
+                    b.Property<string>("DutyEndTime");
 
-                    b.Property<DateTime?>("DutyStartTime");
+                    b.Property<string>("DutyStartTime");
 
                     b.Property<string>("PointsEarned");
 

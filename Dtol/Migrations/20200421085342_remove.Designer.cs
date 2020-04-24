@@ -4,108 +4,22 @@ using Dtol;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Dtol.Migrations
 {
     [DbContext(typeof(DtolContext))]
-    partial class DtolContextModelSnapshot : ModelSnapshot
+    [Migration("20200421085342_remove")]
+    partial class remove
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("Dtol.dtol.MydutyClaim_Info", b =>
-                {
-                    b.Property<string>("id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime?>("CreateDate");
-
-                    b.Property<DateTime?>("EndDutyTime");
-
-                    b.Property<string>("Normalization_InfoId");
-
-                    b.Property<string>("OndutyClaims_Infoid");
-
-                    b.Property<DateTime?>("StartDutyTime");
-
-                    b.Property<string>("UserName");
-
-                    b.Property<string>("Userid");
-
-                    b.Property<string>("status");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("Normalization_InfoId");
-
-                    b.HasIndex("OndutyClaims_Infoid");
-
-                    b.ToTable("MydutyClaim_Info");
-                });
-
-            modelBuilder.Entity("Dtol.dtol.Normalization_Info", b =>
-                {
-                    b.Property<string>("id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("CheckInTime");
-
-                    b.Property<string>("CheckOutTime");
-
-                    b.Property<string>("CommunityName");
-
-                    b.Property<string>("CommunityNameCode");
-
-                    b.Property<DateTime?>("CreateaDate");
-
-                    b.Property<DateTime?>("DutyEndTime");
-
-                    b.Property<DateTime?>("DutyStartTime");
-
-                    b.Property<string>("PointsEarned");
-
-                    b.Property<string>("ServiceContent");
-
-                    b.Property<string>("XiaoCommunityName");
-
-                    b.Property<string>("XiaoCommunityNameeCode");
-
-                    b.Property<string>("status");
-
-                    b.Property<string>("title");
-
-                    b.HasKey("id");
-
-                    b.ToTable("Normalization_Info");
-                });
-
-            modelBuilder.Entity("Dtol.dtol.OndutyClaims_Info", b =>
-                {
-                    b.Property<string>("id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime?>("ClaimTime");
-
-                    b.Property<DateTime?>("EndTime");
-
-                    b.Property<string>("Normalization_InfoId");
-
-                    b.Property<DateTime?>("StartTime");
-
-                    b.Property<int>("TotalReportNum");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("Normalization_InfoId");
-
-                    b.ToTable("OndutyClaims_Info");
-                });
 
             modelBuilder.Entity("Dtol.dtol.User_Depart", b =>
                 {
@@ -1075,24 +989,6 @@ namespace Dtol.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Volunteer_Score");
-                });
-
-            modelBuilder.Entity("Dtol.dtol.MydutyClaim_Info", b =>
-                {
-                    b.HasOne("Dtol.dtol.Normalization_Info", "Normalization_Info")
-                        .WithMany()
-                        .HasForeignKey("Normalization_InfoId");
-
-                    b.HasOne("Dtol.dtol.OndutyClaims_Info")
-                        .WithMany("mydutyClaim_Infos")
-                        .HasForeignKey("OndutyClaims_Infoid");
-                });
-
-            modelBuilder.Entity("Dtol.dtol.OndutyClaims_Info", b =>
-                {
-                    b.HasOne("Dtol.dtol.Normalization_Info", "Normalization_Info")
-                        .WithMany("ondutyClaims_Infos")
-                        .HasForeignKey("Normalization_InfoId");
                 });
 
             modelBuilder.Entity("Dtol.dtol.User_Info", b =>

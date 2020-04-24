@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Dtol.dtol;
-
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Debug;
 namespace Dtol
 {
     public class   DtolContext: DbContext
     {
-
+        [Obsolete]
+        public static readonly LoggerFactory LoggerFactory = new LoggerFactory(new[] { new DebugLoggerProvider((_, __) => true) });
         public DtolContext()
         {
         }
@@ -30,6 +32,9 @@ namespace Dtol
         //optionsBuilder.UseMySQL("server=localhost;user=root;database=test;port=3306;password=****;SslMode=None")
         //}
 
+        public DbSet<MydutyClaim_Info> MydutyClaim_Info { get; set; }
+        public DbSet<Normalization_Info> Normalization_Info { get; set; }
+        public DbSet<OndutyClaims_Info> OndutyClaims_Info { get; set; }
 
         public DbSet<User_Info> user_Info { get; set; }
         public DbSet<User_Rights> user_Rights { get; set; }
