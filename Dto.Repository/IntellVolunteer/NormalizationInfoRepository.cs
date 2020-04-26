@@ -90,8 +90,8 @@ namespace Dto.Repository.IntellVolunteer
                // tempresult.ondutyClaims_Infos[i].mydutyClaim_Infos.AddRange(temp);
             }
 
-         
-
+            var temp = tempresult.ondutyClaims_Infos.OrderBy(o => o.StartTime).ToList();
+            tempresult.ondutyClaims_Infos = temp;
             return tempresult;
         }
 

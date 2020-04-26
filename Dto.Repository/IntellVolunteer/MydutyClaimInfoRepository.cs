@@ -59,14 +59,14 @@ namespace Dto.Repository.IntellVolunteer
             if (mydutyClaimInfoSearchViewModel.status == "0")
             {
                 // 不显示 已删除的信息 status=3 20191111  ,不显示 居民发布未审核的信息  status=9;审核不通过信息 status=8 (20191120)
-                predicate = predicate.And(p => p.EndDutyTime < DateTime.Now);
+                predicate = predicate.And(p => p.StartDutyTime > DateTime.Now);
             
                 predicate = predicate.And(p => p.status.Contains("1"));
 
             }
             else if (mydutyClaimInfoSearchViewModel.status == "1")
             {
-                predicate = predicate.And(p => p.StartDutyTime > DateTime.Now);
+                predicate = predicate.And(p => p.EndDutyTime < DateTime.Now);
                 predicate = predicate.And(p => p.status.Contains("1"));
             }
             else if (mydutyClaimInfoSearchViewModel.status == "2")
