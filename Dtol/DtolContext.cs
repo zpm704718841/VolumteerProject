@@ -35,6 +35,8 @@ namespace Dtol
         public DbSet<MydutyClaim_Info> MydutyClaim_Info { get; set; }
         public DbSet<Normalization_Info> Normalization_Info { get; set; }
         public DbSet<OndutyClaims_Info> OndutyClaims_Info { get; set; }
+        public DbSet<MydutyClaim_Sign> MydutyClaim_Sign { get; set; }
+        
 
         public DbSet<User_Info> user_Info { get; set; }
         public DbSet<User_Rights> user_Rights { get; set; }
