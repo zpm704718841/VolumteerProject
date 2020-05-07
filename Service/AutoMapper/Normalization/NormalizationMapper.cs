@@ -17,6 +17,9 @@ namespace Dto.Service.AutoMapper.Normalization
             CreateMap<OndutyClaims_Info, ContainOnDutyMiddleMiddle>();
 
             CreateMap<MydutyClaim_Info, ContainOnDutyMiddleMiddle>();
+            CreateMap<MydutyClaim_Info, MydutyClaimInfoMiddleModel>();
+
+            //CreateMap<List<MydutyClaim_Info>, List<MydutyClaimInfoMiddleModel>>();
 
             CreateMap<Normalization_Info, NornalContainDutyMiddle>()
                 

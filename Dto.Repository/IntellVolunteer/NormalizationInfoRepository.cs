@@ -44,7 +44,7 @@ namespace Dto.Repository.IntellVolunteer
         public List<Normalization_Info>  NormalizationSearch(NormalSearchViewModel normalSearchViewModel)
         {
             var preciate = SearchVAWhere(normalSearchViewModel);
-            var result = DbSet.Where(preciate).ToList();
+            var result = DbSet.AsQueryable().Where(preciate).ToList();
             return result;
         }
 
@@ -53,14 +53,14 @@ namespace Dto.Repository.IntellVolunteer
         {
             var predicate = WhereExtension.True<Normalization_Info>();//初始化where表达式
             // 不显示 已删除的信息 status=3 20191111  ,不显示 居民发布未审核的信息  status=9;审核不通过信息 status=8 (20191120)
-            predicate = predicate.And(p => p.title.Contains(normalSearchViewModel.title));
-            predicate = predicate.And(p => p.XiaoCommunityNameeCode.Contains(normalSearchViewModel.XiaoCommunityNameeCode));
-            predicate = predicate.And(p => p.XiaoCommunityName.Contains(normalSearchViewModel.XiaoCommunityName));
-            predicate = predicate.And(p => p.status.Contains(normalSearchViewModel.status));
-            predicate = predicate.And(p => p.CheckInTime.Contains(normalSearchViewModel.CheckInTime));
-            predicate = predicate.And(p => p.CheckOutTime.Contains(normalSearchViewModel.CheckOutTime));
-            predicate = predicate.And(p => p.DutyStartTime.Value.ToString().Contains(normalSearchViewModel.DutyStartTime));
-            predicate = predicate.And(p => p.DutyEndTime.Value.ToString().Contains(normalSearchViewModel.DutyEndTime));
+            //predicate = predicate.And(p => p.title.Contains(normalSearchViewModel.title));
+            predicate = predicate.And(p => p.CommunityNameCode.Contains(normalSearchViewModel.CommunityNameCode));
+            //predicate = predicate.And(p => p.XiaoCommunityName.Contains(normalSearchViewModel.XiaoCommunityName));
+            //predicate = predicate.And(p => p.status.Contains(normalSearchViewModel.status));
+            //predicate = predicate.And(p => p.CheckInTime.Contains(normalSearchViewModel.CheckInTime));
+            //predicate = predicate.And(p => p.CheckOutTime.Contains(normalSearchViewModel.CheckOutTime));
+            //predicate = predicate.And(p => p.DutyStartTime.Value.ToString().Contains(normalSearchViewModel.DutyStartTime));
+            //predicate = predicate.And(p => p.DutyEndTime.Value.ToString().Contains(normalSearchViewModel.DutyEndTime));
             return predicate;
         }
 
@@ -69,8 +69,8 @@ namespace Dto.Repository.IntellVolunteer
             //小区等主要信息，以及值班需要上报的信息
             var tempresult = DbSet.Where(a => a.id == normalizationContainSearchViewModel.id)
                                   .IncludeFilter(c => c.ondutyClaims_Infos.Where(a=>a.ClaimTime.Value.ToString()
-                                  .Contains(normalizationContainSearchViewModel.clamtime)
-                                  ))
+                                  .Contains(normalizationContainSearchViewModel.clamtime)) 
+                                  )
                                   .FirstOrDefault();
             Console.WriteLine(tempresult);
 
@@ -90,7 +90,7 @@ namespace Dto.Repository.IntellVolunteer
                // tempresult.ondutyClaims_Infos[i].mydutyClaim_Infos.AddRange(temp);
             }
 
-            var temp = tempresult.ondutyClaims_Infos.OrderBy(o => o.StartTime).ToList();
+            var temp = tempresult.ondutyClaims_Infos.Where(a=>a.SubdistrictID.Equals(normalizationContainSearchViewModel.SubdistrictID)).OrderBy(o => o.StartTime).ToList();
             tempresult.ondutyClaims_Infos = temp;
             return tempresult;
         }

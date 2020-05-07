@@ -13,6 +13,8 @@ namespace Dtol.dtol
         public DateTime? StartTime { get; set; }
         public DateTime? EndTime { get; set; }
         public int TotalReportNum { get; set; }
+        public string SubdistrictID { get; set; }//新增小区code
+        public string Subdistrict { get; set; }//新增小区
         public string Normalization_InfoId { get; set; }
         public Normalization_Info Normalization_Info { get; set; }
         public List<MydutyClaim_Info>  mydutyClaim_Infos { get; set; }

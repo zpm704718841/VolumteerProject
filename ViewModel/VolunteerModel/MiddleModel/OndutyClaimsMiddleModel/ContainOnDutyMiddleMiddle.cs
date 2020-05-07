@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dtol.dtol;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -15,5 +16,7 @@ namespace ViewModel.VolunteerModel.MiddleModel.OndutyClaimsMiddleModel
         public string status { get; set; }
 
         public string isClaim { get; set; }
+
+        public List<MydutyClaimInfoMiddleModel> mydutyClaim_Infos { get; set; }
     }
 }

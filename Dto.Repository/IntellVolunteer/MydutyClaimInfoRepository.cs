@@ -55,7 +55,7 @@ namespace Dto.Repository.IntellVolunteer
 
             //未开始  已结束  已取消
 
-
+            //未开始
             if (mydutyClaimInfoSearchViewModel.status == "0")
             {
                 // 不显示 已删除的信息 status=3 20191111  ,不显示 居民发布未审核的信息  status=9;审核不通过信息 status=8 (20191120)
@@ -64,11 +64,13 @@ namespace Dto.Repository.IntellVolunteer
                 predicate = predicate.And(p => p.status.Contains("1"));
 
             }
+            //已结束
             else if (mydutyClaimInfoSearchViewModel.status == "1")
             {
                 predicate = predicate.And(p => p.EndDutyTime < DateTime.Now);
                 predicate = predicate.And(p => p.status.Contains("1"));
             }
+            // 已取消
             else if (mydutyClaimInfoSearchViewModel.status == "2")
             {
                 //predicate = predicate.And(p => p.EndDutyTime < DateTime.Now);
@@ -106,6 +108,16 @@ namespace Dto.Repository.IntellVolunteer
         public MydutyClaim_Info GetInfoById(string id)
         {
            return  DbSet.FirstOrDefault(a=>a.id==id);
+        }
+
+
+        public List<MydutyClaim_Info> GetByOndutyClaims_InfoID(string id)
+        {
+            var predicate = WhereExtension.True<MydutyClaim_Info>();//初始化where表达式
+            predicate = predicate.And(p => p.OndutyClaims_InfoId.Equals(id));
+      
+            var result = DbSet.Where(predicate).OrderBy(a => a.CreateDate).ToList();
+            return result;
         }
     }
 }

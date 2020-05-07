@@ -4,14 +4,16 @@ using Dtol;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Dtol.Migrations
 {
     [DbContext(typeof(DtolContext))]
-    partial class DtolContextModelSnapshot : ModelSnapshot
+    [Migration("20200426055044_edittablenew2")]
+    partial class edittablenew2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,10 +33,6 @@ namespace Dtol.Migrations
                     b.Property<string>("OndutyClaims_InfoId");
 
                     b.Property<DateTime?>("StartDutyTime");
-
-                    b.Property<DateTime?>("UpdateDate");
-
-                    b.Property<string>("UpdateUser");
 
                     b.Property<string>("UserName");
 

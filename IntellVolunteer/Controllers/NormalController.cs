@@ -6,6 +6,8 @@ using Castle.Core.Logging;
 using Dto.IService.IntellVolunteer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ViewModel.VolunteerBackground.ResponseModel;
+using ViewModel.VolunteerModel.RequsetModel;
 using ViewModel.VolunteerModel.RequsetModel.NormalViewModel;
 using ViewModel.VolunteerModel.ResponseModel.NormalViewModel;
 
@@ -113,6 +115,46 @@ namespace IntellVolunteer.Controllers
 
             return Ok("添加成功");
         }
+
+        /// <summary>
+        /// (小程序端接口)  获取 小区  信息   （社区id）
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult<UserDepartResModel> Manage_SearchDepart(CodeViewModel code)
+        {
+            UserDepartResModel u_depart = new UserDepartResModel();
+            var u_departMidModel = normalizationInfoService.GetDepartList(code);
+            u_depart.IsSuccess = true;
+            u_depart.UserDepart = u_departMidModel;
+            u_depart.baseViewModel.Message = "查询成功";
+            u_depart.baseViewModel.ResponseCode = 200;
+ 
+            return Ok(u_depart);
+
+        }
+
+
+        /// <summary>
+        /// (小程序端接口)  获取 该值班信息的认领人信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult<MydutyClaimInfoSearchResModel> GetDutyListByID(CodeViewModel code)
+        {
+            MydutyClaimInfoSearchResModel searchResModel = new MydutyClaimInfoSearchResModel();
+            var lists = normalizationInfoService.GetDutyListByID(code);
+            searchResModel.isSuccess = true;
+            searchResModel.mydutyClaimInfoSearchMiddleModel = lists;
+            searchResModel.baseViewModel.Message = "查询成功";
+            searchResModel.baseViewModel.ResponseCode = 200;
+
+            return Ok(searchResModel);
+
+        }
+
+
+
 
     }
 } 

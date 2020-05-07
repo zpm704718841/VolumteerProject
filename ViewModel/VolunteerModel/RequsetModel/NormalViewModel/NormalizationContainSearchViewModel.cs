@@ -20,5 +20,6 @@ namespace ViewModel.VolunteerModel.RequsetModel.NormalViewModel
         public string clamtime { get; set; }
 
         public string status { get; set; }
+        public string SubdistrictID { get; set; }//小区code
     }
 }

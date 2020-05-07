@@ -22,7 +22,7 @@ namespace Dtol.dtol
         public string ServiceContent { get; set; }
         public DateTime? CreateaDate { get; set; } = DateTime.Now;
         public string status { get; set; }
-
+ 
         public List<OndutyClaims_Info> ondutyClaims_Infos { get; set; }
 
 

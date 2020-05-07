@@ -34,10 +34,23 @@ namespace Dto.Service.IntellVolunteer
         public List<MydutyClaimInfoSearchMiddleModel> getMydutyInfoService(MydutyClaimInfoSearchViewModel  mydutyClaimInfoSearchViewModel)
         {
             var searchresult = _IMydutyClaimInfoRepository.getMydutyInfo(mydutyClaimInfoSearchViewModel);
-
-            var result = _IMapper.Map<List<MydutyClaim_Info>, List<MydutyClaimInfoSearchMiddleModel>>(searchresult);
-
-            return result;
+            List<MydutyClaimInfoSearchMiddleModel> lists = new List<MydutyClaimInfoSearchMiddleModel>();
+           
+            foreach (var item in searchresult)
+            {
+                var res = new MydutyClaimInfoSearchMiddleModel();
+                res.id = item.id;
+                res.StartDutyTime = item.StartDutyTime;
+                res.EndDutyTime = item.EndDutyTime;
+                res.CreateDate = item.CreateDate;
+                res.status = item.status;
+                res.title = item.OndutyClaims_Info.Normalization_Info.title;
+                res.Userid = item.Userid;
+                res.UserName = item.UserName;
+                res.XiaoCommunityName = item.OndutyClaims_Info.Subdistrict;
+                lists.Add(res);
+            }
+            return lists;
 
         }
 
@@ -45,6 +58,9 @@ namespace Dto.Service.IntellVolunteer
         {
             var searchresult= _IMydutyClaimInfoRepository.GetInfoById(mydutyClaimInfoUpdateViewModel.id);
             var updatemodel= _IMapper.Map<MydutyClaimInfoUpdateViewModel, MydutyClaim_Info>(mydutyClaimInfoUpdateViewModel, searchresult);//mapper没配置
+            updatemodel.UpdateDate = DateTime.Now;
+            updatemodel.UpdateUser = updatemodel.Userid;
+
             _IMydutyClaimInfoRepository.Update(updatemodel);
             _IMydutyClaimInfoRepository.SaveChanges();
         }
