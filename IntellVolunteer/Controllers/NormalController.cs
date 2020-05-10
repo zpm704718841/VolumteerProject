@@ -6,6 +6,7 @@ using Castle.Core.Logging;
 using Dto.IService.IntellVolunteer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ViewModel.PublicViewModel;
 using ViewModel.VolunteerBackground.ResponseModel;
 using ViewModel.VolunteerModel.RequsetModel;
 using ViewModel.VolunteerModel.RequsetModel.NormalViewModel;
@@ -154,6 +155,68 @@ namespace IntellVolunteer.Controllers
         }
 
 
+        /// <summary>
+        /// (小程序端接口)  值班认领 上传现场服务照片  （认领值班ID、uid、 现场图片信息列表）
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult<BaseViewModel> MyDutySign_SubmitImg(MyDutySignImgAddModel AddViewModel)
+        {
+
+            BaseViewModel AddResModel = new BaseViewModel();
+
+            if (!String.IsNullOrEmpty(AddViewModel.uid) || !String.IsNullOrEmpty(AddViewModel.MydutyClaim_InfoID))
+            {
+                int Add_Count = mydutyClaimInfoService.SubmitImg(AddViewModel);
+                if (Add_Count >= 1)
+                {
+                    AddResModel.Message = "上传成功";
+                    AddResModel.ResponseCode = 200;
+                }
+                else
+                {
+                    AddResModel.Message = "上传失败";
+                    AddResModel.ResponseCode = 400;
+                }
+
+            }
+            else
+            {
+                AddResModel.Message = "参数为空，上传失败";
+                AddResModel.ResponseCode = 500;
+            }
+            
+            return Ok(AddResModel);
+        }
+
+
+
+
+        /// <summary>
+        /// (小程序端接口) 获取该认领信息具体情况 包括签到、签退 现场图片等
+        /// </summary>
+        /// <param name="SearchByIDAnduidModel "></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult<MydutyClaim_InfoResModel> GetMydutyDetail(SearchByIDAnduidModel viewModel)
+        {
+            MydutyClaim_InfoResModel SearchResModel = new MydutyClaim_InfoResModel();
+            if (!string.IsNullOrEmpty(viewModel.uid) && !string.IsNullOrEmpty(viewModel.MydutyClaim_InfoID))
+            {
+                SearchResModel = mydutyClaimInfoService.GetMydutyDetail(viewModel);
+            }
+            else
+            {
+                SearchResModel.claim_SignInfo = null;
+                SearchResModel.MiddleModel = null;
+                SearchResModel.isSuccess = false;
+                SearchResModel.baseViewModel.Message = "参数为空";
+                SearchResModel.baseViewModel.ResponseCode = 500;
+                SearchResModel.TotalNum = 0;
+            }
+            return Ok(SearchResModel);
+
+        }
 
 
     }

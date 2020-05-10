@@ -15,7 +15,8 @@ namespace Dtol.dtol
         public DateTime? CreateDate { get; set; } = DateTime.Now;
         public DateTime? UpdateDate { get; set; }
         public String UpdateUser { get; set; }
-        public string OndutyClaims_InfoId { get; set; }
-        public OndutyClaims_Info OndutyClaims_Info { get; set; }
+        public string OndutyClaims_InfoId { get; set; }//值班信息ID
+        public string MydutyClaim_InfoID { get; set; }//认领值班信息ID
+        public OndutyClaims_Info OndutyClaims_Info { get; set; }//值班信息
     }
 }

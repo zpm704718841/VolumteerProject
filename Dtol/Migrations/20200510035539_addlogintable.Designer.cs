@@ -4,14 +4,16 @@ using Dtol;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Dtol.Migrations
 {
     [DbContext(typeof(DtolContext))]
-    partial class DtolContextModelSnapshot : ModelSnapshot
+    [Migration("20200510035539_addlogintable")]
+    partial class addlogintable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -948,35 +950,6 @@ namespace Dtol.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("V_GetToken");
-                });
-
-            modelBuilder.Entity("Dtol.dtol.V_ReadLog", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("CreateDate");
-
-                    b.Property<string>("Memo");
-
-                    b.Property<string>("bak1");
-
-                    b.Property<string>("bak2");
-
-                    b.Property<string>("bak3");
-
-                    b.Property<string>("bak4");
-
-                    b.Property<string>("bak5");
-
-                    b.Property<string>("openid");
-
-                    b.Property<string>("type");
-
-                    b.HasKey("id");
-
-                    b.ToTable("V_ReadLog");
                 });
 
             modelBuilder.Entity("Dtol.dtol.VolunteerActivity", b =>

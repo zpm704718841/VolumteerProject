@@ -22,6 +22,7 @@ namespace Dto.Service.IntellVolunteer
         private readonly IMapper _IMapper;
         private readonly IVolunteerInfoRepository _IVolunteerInfoRepository;
 
+
         public NormalizationInfoService(INormalizationInfoRepository iNormalizationInfoRepository,
             IMydutyClaimInfoRepository iMydutyClaimInfoRepository, IMapper iMapper, IVolunteerInfoRepository infoRepository)
         {
@@ -29,6 +30,7 @@ namespace Dto.Service.IntellVolunteer
             _IMydutyClaimInfoRepository = iMydutyClaimInfoRepository;
             _IMapper = iMapper;
             _IVolunteerInfoRepository = infoRepository;
+           
         }
 
         public void AddNormalizationInfoService(NormalAddViewModel normalAddViewModel)
@@ -130,5 +132,7 @@ namespace Dto.Service.IntellVolunteer
             return middleModels;
         }
 
+
+      
     }
 }

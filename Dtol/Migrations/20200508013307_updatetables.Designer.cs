@@ -4,84 +4,22 @@ using Dtol;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Dtol.Migrations
 {
     [DbContext(typeof(DtolContext))]
-    partial class DtolContextModelSnapshot : ModelSnapshot
+    [Migration("20200508013307_updatetables")]
+    partial class updatetables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("Dtol.dtol.LoginType", b =>
-                {
-                    b.Property<string>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("CreateDate");
-
-                    b.Property<string>("Memo");
-
-                    b.Property<string>("bak1");
-
-                    b.Property<string>("bak2");
-
-                    b.Property<string>("bak3");
-
-                    b.Property<string>("bak4");
-
-                    b.Property<string>("bak5");
-
-                    b.Property<string>("days");
-
-                    b.Property<string>("hours");
-
-                    b.Property<string>("name");
-
-                    b.Property<string>("status");
-
-                    b.Property<string>("type");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("LoginType");
-                });
-
-            modelBuilder.Entity("Dtol.dtol.LoginType_Log", b =>
-                {
-                    b.Property<string>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime?>("CreateDate");
-
-                    b.Property<DateTime?>("UpdateDate");
-
-                    b.Property<string>("bak1");
-
-                    b.Property<string>("bak2");
-
-                    b.Property<string>("bak3");
-
-                    b.Property<string>("bak4");
-
-                    b.Property<string>("bak5");
-
-                    b.Property<string>("status");
-
-                    b.Property<string>("typeid");
-
-                    b.Property<string>("uid");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("LoginType_Log");
-                });
 
             modelBuilder.Entity("Dtol.dtol.MydutyClaim_Info", b =>
                 {
@@ -205,36 +143,6 @@ namespace Dtol.Migrations
                     b.HasIndex("Normalization_InfoId");
 
                     b.ToTable("OndutyClaims_Info");
-                });
-
-            modelBuilder.Entity("Dtol.dtol.UserLogin_Log", b =>
-                {
-                    b.Property<string>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Action");
-
-                    b.Property<DateTime?>("CreateDate");
-
-                    b.Property<DateTime?>("UpdateDate");
-
-                    b.Property<string>("bak1");
-
-                    b.Property<string>("bak2");
-
-                    b.Property<string>("bak3");
-
-                    b.Property<string>("bak4");
-
-                    b.Property<string>("bak5");
-
-                    b.Property<string>("status");
-
-                    b.Property<string>("uid");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("UserLogin_Log");
                 });
 
             modelBuilder.Entity("Dtol.dtol.User_Depart", b =>
@@ -948,35 +856,6 @@ namespace Dtol.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("V_GetToken");
-                });
-
-            modelBuilder.Entity("Dtol.dtol.V_ReadLog", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("CreateDate");
-
-                    b.Property<string>("Memo");
-
-                    b.Property<string>("bak1");
-
-                    b.Property<string>("bak2");
-
-                    b.Property<string>("bak3");
-
-                    b.Property<string>("bak4");
-
-                    b.Property<string>("bak5");
-
-                    b.Property<string>("openid");
-
-                    b.Property<string>("type");
-
-                    b.HasKey("id");
-
-                    b.ToTable("V_ReadLog");
                 });
 
             modelBuilder.Entity("Dtol.dtol.VolunteerActivity", b =>

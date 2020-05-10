@@ -19,18 +19,7 @@ namespace Dtol
             : base(options)
         {
         }
-
-        //连接复原
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-
-        //    optionsBuilder
-        //        .UseSqlServer(
-        //            @"Server = DESKTOP - QEJHC80\\SQL2014; Database = User_DateBase; Trusted_Connection = True;ConnectRetryCount=0",
-        //            options => options.EnableRetryOnFailure());
-
-        //optionsBuilder.UseMySQL("server=localhost;user=root;database=test;port=3306;password=****;SslMode=None")
-        //}
+ 
 
         public DbSet<MydutyClaim_Info> MydutyClaim_Info { get; set; }
         public DbSet<Normalization_Info> Normalization_Info { get; set; }
@@ -61,5 +50,13 @@ namespace Dtol
         public DbSet<VActivity_PublicShow_GiveLike> VActivity_PublicShow_GiveLike { get; set; }
         //消息推送
         public DbSet<Volunteer_Message> Volunteer_Message { get; set; }
+
+
+        //新增 用户注册登录表 20200510
+        public DbSet<LoginType_Log> LoginType_Log { get; set; }
+        public DbSet<UserLogin_Log> UserLogin_Log { get; set; }
+        public DbSet<LoginType> LoginType { get; set; }
+        public DbSet<V_ReadLog> V_ReadLog { get; set; }
+        
     }
 }
