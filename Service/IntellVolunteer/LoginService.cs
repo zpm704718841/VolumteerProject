@@ -4,6 +4,7 @@ using Dto.IService.IntellVolunteer;
 using Dtol.dtol;
 using Dtol.WGWdtol;
 using System;
+using Serilog;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,8 +13,7 @@ using ViewModel.VolunteerModel.MiddleModel;
 using ViewModel.VolunteerModel.RequsetModel;
 using ViewModel.VolunteerModel.ResponseModel;
 using ViewModel.PublicViewModel;
-using Microsoft.Extensions.Logging;
-
+ 
 namespace Dto.Service.IntellVolunteer
 {
     public class LoginService: ILoginService
@@ -76,7 +76,7 @@ namespace Dto.Service.IntellVolunteer
                 {
                     baseView.Message = "出现异常";
                     baseView.ResponseCode = 3;
-                    _ILogger.LogInformation("记录用户登录时间出现异常" + ex.Message + ex.StackTrace + ex.Source);
+                    _ILogger.Information("记录用户登录时间出现异常" + ex.Message + ex.StackTrace + ex.Source);
                 }
             }
             return baseView;
@@ -88,7 +88,7 @@ namespace Dto.Service.IntellVolunteer
             UserLoginResModel viewModel = new UserLoginResModel();
             if (uidViewModel.VID == "")
             {
-                _ILogger.LogInformation("获取用户的登录方式参数为空");
+                _ILogger.Information("获取用户的登录方式参数为空");
                 viewModel = null;
             }
             else
@@ -116,7 +116,7 @@ namespace Dto.Service.IntellVolunteer
                 }
                 catch (Exception ex)
                 {
-                    _ILogger.LogInformation("根据uid获取用户的登录方式出现异常" + ex.Message + ex.StackTrace + ex.Source);
+                    _ILogger.Information("根据uid获取用户的登录方式出现异常" + ex.Message + ex.StackTrace + ex.Source);
                     viewModel = null;
                 }
             }
@@ -131,7 +131,7 @@ namespace Dto.Service.IntellVolunteer
             BaseViewModel viewModel = new BaseViewModel();
             if (uidViewModel.VID == "")
             {
-                _ILogger.LogInformation("验证用户是否登录参数为空");
+                _ILogger.Information("验证用户是否登录参数为空");
                 viewModel.ResponseCode = 2;
                 viewModel.Message = "参数为空";
             }
@@ -218,7 +218,7 @@ namespace Dto.Service.IntellVolunteer
                 }
                 catch (Exception ex)
                 {
-                    _ILogger.LogInformation("根据uid获取用户的登录方式出现异常" + ex.Message + ex.StackTrace + ex.Source);
+                    _ILogger.Information("根据uid获取用户的登录方式出现异常" + ex.Message + ex.StackTrace + ex.Source);
                     viewModel.ResponseCode = 3;
                     viewModel.Message = "出现异常";
                 }
@@ -227,7 +227,133 @@ namespace Dto.Service.IntellVolunteer
             return viewModel;
         }
 
+        //记录 用户选择登录方式（参数：uid）(默认人脸识别登录)
+        public BaseViewModel SaveLoginTypeInfo(string uid)
+        {
+            BaseViewModel baseView = new BaseViewModel();
+            if (uid == "")
+            {
+                baseView.Message = "参数为空";
+                baseView.ResponseCode = 2;
+            }
+            else
+            {
+                try
+                {
+                    //获取人脸登录方式  默认该用户选用人脸识别登录
+                    LoginType LoginType = _loginTypeRepository.SearchFaceModel();
 
+                    LoginType_Log log = new LoginType_Log();
+                    log.ID = Guid.NewGuid().ToString();
+                    log.uid = uid;
+                    log.typeid = LoginType.ID;
+                    log.status = "true";
+                    log.CreateDate = DateTime.Now;
+                    _loginType_Log.Add(log);
+                    int a = _loginType_Log.SaveChanges();
+                    if (a > 0)
+                    {
+                        baseView.Message = "保存成功";
+                        baseView.ResponseCode = 0;
+                    }
+                    else
+                    {
+                        baseView.Message = "保存失败";
+                        baseView.ResponseCode = 1;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    baseView.Message = "出现异常";
+                    baseView.ResponseCode = 3;
+                    _ILogger.Information("记录用户选择登录方式出现异常" + ex.Message + ex.StackTrace + ex.Source);
+                }
+            }
+            return baseView;
+        }
+
+
+        //记录 用户选择登录方式（参数：uid）(更新操作)
+        public BaseViewModel SaveLoginTypeInfo(LoginTypeModel typeModel)
+        {
+            _ILogger.Information("记录用户选择登录方式参数typeid=" + typeModel.typeid);
+            BaseViewModel baseView = new BaseViewModel();
+            if (typeModel.uid == "" || typeModel.typeid == "")
+            {
+                baseView.Message = "参数为空";
+                baseView.ResponseCode = 2;
+            }
+            else
+            {
+                try
+                {
+                    SearchByVIDModel uID = new SearchByVIDModel();
+                    uID.VID = typeModel.uid;
+                    LoginType_Log loginType_Log = _loginType_Log.SearchByUIDModel(uID);
+                    //未选择 登录方式
+                    if (loginType_Log == null)
+                    {
+                        //获取人脸登录方式  默认该用户选用人脸识别登录
+                        LoginType LoginType = _loginTypeRepository.SearchFaceModel();
+
+                        LoginType_Log log = new LoginType_Log();
+                        log.ID = Guid.NewGuid().ToString();
+                        log.uid = typeModel.uid;
+                        log.typeid = LoginType.ID;
+                        log.status = "true";
+                        log.CreateDate = DateTime.Now;
+                        _loginType_Log.Add(log);
+                        int a = _loginType_Log.SaveChanges();
+                        if (a > 0)
+                        {
+                            baseView.Message = "保存成功";
+                            baseView.ResponseCode = 0;
+                        }
+                        else
+                        {
+                            baseView.Message = "保存失败";
+                            baseView.ResponseCode = 1;
+                        }
+                    }
+                    else
+                    {
+                        //更新 原登录方式为 无效 
+                        loginType_Log.status = "false";
+                        loginType_Log.UpdateDate = DateTime.Now;
+                        _loginType_Log.Update(loginType_Log);
+                        int a = _loginType_Log.SaveChanges();
+                        if (a > 0)
+                        {
+                            //保存新的登录方式
+                            LoginType_Log log2 = new LoginType_Log();
+                            log2.ID = Guid.NewGuid().ToString();
+                            log2.uid = typeModel.uid;
+                            log2.typeid = typeModel.typeid;
+                            log2.status = "true";
+                            log2.CreateDate = DateTime.Now;
+                            _loginType_Log.Add(log2);
+                            _loginType_Log.SaveChanges();
+                            baseView.Message = "保存成功";
+                            baseView.ResponseCode = 0;
+                        }
+                        else
+                        {
+                            baseView.Message = "保存失败";
+                            baseView.ResponseCode = 1;
+                        }
+
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    baseView.Message = "出现异常";
+                    baseView.ResponseCode = 3;
+                    _ILogger.Information("记录用户选择登录方式出现异常" + ex.Message + ex.StackTrace + ex.Source);
+                }
+            }
+            return baseView;
+        }
 
         //获取所有登录方式（无参数）
         public List<LoginType> GetLoginTypes()
@@ -239,7 +365,7 @@ namespace Dto.Service.IntellVolunteer
             }
             catch (Exception ex)
             {
-                _ILogger.LogInformation("查询登录方式（无参数）出现异常" + ex.Message + ex.StackTrace + ex.Source);
+                _ILogger.Information("查询登录方式（无参数）出现异常" + ex.Message + ex.StackTrace + ex.Source);
                 return null;
             }
         }
@@ -247,7 +373,7 @@ namespace Dto.Service.IntellVolunteer
 
 
         //记录 用户插入阅读隐私政策记录（参数：openid） 
-        public BaseViewModel SaveE_ReadLog(string openid)
+        public BaseViewModel SaveV_ReadLog(string openid)
         {
             BaseViewModel baseView = new BaseViewModel();
             if (openid == "")
@@ -281,7 +407,7 @@ namespace Dto.Service.IntellVolunteer
                 {
                     baseView.Message = "出现异常";
                     baseView.ResponseCode = 3;
-                    _ILogger.LogInformation("插入阅读隐私政策记录出现异常" + ex.Message + ex.StackTrace + ex.Source);
+                    _ILogger.Information("插入阅读隐私政策记录出现异常" + ex.Message + ex.StackTrace + ex.Source);
                 }
             }
             return baseView;
@@ -289,7 +415,7 @@ namespace Dto.Service.IntellVolunteer
 
 
         //验证 用户是否 阅读隐私政策记录（参数：openid） 
-        public BaseViewModel CheckE_ReadLog(string openid)
+        public BaseViewModel CheckV_ReadLog(string openid)
         {
             BaseViewModel baseView = new BaseViewModel();
             if (openid == "")
@@ -319,13 +445,61 @@ namespace Dto.Service.IntellVolunteer
                 {
                     baseView.Message = "出现异常";
                     baseView.ResponseCode = 3;
-                    _ILogger.LogInformation("验证是否阅读隐私政策出现异常" + ex.Message + ex.StackTrace + ex.Source);
+                    _ILogger.Information("验证是否阅读隐私政策出现异常" + ex.Message + ex.StackTrace + ex.Source);
                 }
             }
             return baseView;
         }
 
 
+        //记录 用户退出登录操作 时间（参数：uid）
+        public BaseViewModel UpdateLoginInfo(string uid)
+        {
+            BaseViewModel baseView = new BaseViewModel();
+            if (uid == "")
+            {
+                baseView.Message = "参数为空";
+                baseView.ResponseCode = 2;
+            }
+            else
+            {
+                try
+                {
+                    //获取 用户最新的一次登录记录 20200402
+                    var log = _userLogin_Log.GetUserLogin(uid);
+                    if (log != null)
+                    {
+                        log.status = "false";
+                        log.UpdateDate = DateTime.Now;
+                        log.bak1 = "Exit";
+                        _userLogin_Log.Update(log);
+                        int a = _userLogin_Log.SaveChanges();
+                        if (a > 0)
+                        {
+                            baseView.Message = "操作成功";
+                            baseView.ResponseCode = 0;
+                        }
+                        else
+                        {
+                            baseView.Message = "操作失败";
+                            baseView.ResponseCode = 1;
+                        }
+                    }
+                    else
+                    {
+                        baseView.Message = "您尚未登录";
+                        baseView.ResponseCode = 4;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    baseView.Message = "出现异常";
+                    baseView.ResponseCode = 3;
+                    _ILogger.Information("记录用户登录时间出现异常" + ex.Message + ex.StackTrace + ex.Source);
+                }
+            }
+            return baseView;
+        }
 
     }
 }
