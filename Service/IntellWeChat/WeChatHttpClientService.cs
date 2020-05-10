@@ -21,7 +21,7 @@ using ViewModel.VolunteerModel.RequsetModel;
 using ViewModel.VolunteerModel.ResponseModel;
 using ViewModel.PublicViewModel;
 using System.Net;
-
+using SystemFilter.PublicFilter;
 namespace Dto.Service.IntellWeChat
 {
     public class WeChatHttpClientService: IWeChatHttpClientService
@@ -113,9 +113,21 @@ namespace Dto.Service.IntellWeChat
         /// </summary>
         public Dtol.Easydtol.UserInfo GetEasyUserInfo(string code)
         {
-            Dtol.Easydtol.UserInfo user_Infos = _IWeChatClientRepository.EasyDecrypt(code, _IOptions.Value.appid, _IOptions.Value.secret);
- 
-            return user_Infos;
+            Dtol.Easydtol.UserInfo user_Info = _IWeChatClientRepository.EasyDecrypt(code, _IOptions.Value.appid, _IOptions.Value.secret);
+            //判断 是否注册泰便利
+            if(user_Info.ID!=null)
+            {
+                DEncrypt encrypt = new DEncrypt();
+                string Name = encrypt.Decrypt(user_Info.Name);
+                string CertificateID = encrypt.Decrypt(user_Info.CertificateID);
+                string Mobile = encrypt.Decrypt(user_Info.Mobile);
+
+                user_Info.Name = Name;
+                user_Info.CertificateID = CertificateID;
+                user_Info.Mobile = Mobile;
+
+            }
+            return user_Info;
         }
 
 

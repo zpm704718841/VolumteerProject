@@ -42,13 +42,16 @@ namespace Dto.Repository.IntellWeChat
         protected readonly DbSet<Dtol.Easydtol.UserInfo> EasyDbSet;
 
 
-        public WeChatClientRepository(DtolContext context, WGWDtolContext WGWcontext)
+        public WeChatClientRepository(DtolContext context, WGWDtolContext WGWcontext, EasyDtolContext easyDtol)
         {
             Db = context;
             DbSet = Db.Set<V_GetToken>();
 
             WGWDb = WGWcontext;
-            WGWDbSet= WGWDb.Set<UserInfo>();
+            WGWDbSet= WGWDb.Set<Dtol.WGWdtol.UserInfo>();
+
+            EasyDb = easyDtol;
+            EasyDbSet = EasyDb.Set<Dtol.Easydtol.UserInfo>();
         }
 
         public IQueryable<V_GetToken> GetAll()
@@ -302,8 +305,9 @@ namespace Dto.Repository.IntellWeChat
         {
             Dtol.Easydtol.UserInfo userInfo = new Dtol.Easydtol.UserInfo();
             var predicate = WhereExtension.True<Dtol.Easydtol.UserInfo>();
-            predicate = predicate.And(p => p.unionid.Contains(unionid));
-            predicate = predicate.And(p => !String.IsNullOrEmpty(p.Mobile));
+            predicate = predicate.And(p => p.Status.Equals("1"));
+            predicate = predicate.And(p => p.unionid.Equals(unionid));
+        
 
             var result = EasyDbSet.Where(predicate);
 

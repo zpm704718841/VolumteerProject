@@ -128,6 +128,24 @@ namespace IntellWeChat
                     })
                     .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
                 });
+
+            //泰便利小程序用户中心对接 连接字符串
+            var Easyconnection = Configuration.GetConnectionString("EasyConnection");
+            services.AddDbContext<EasyDtolContext>(options =>
+            options.UseSqlServer(Easyconnection));
+            services.AddDbContext<EasyDtolContext>
+                (options =>
+                {
+                    //sqlServerOptions数据库提供程序级别的可选行为选择器
+                    //UseQueryTrackingBehavior 为通用EF Core行为选择器
+                    options.UseSqlServer(Easyconnection, sqlServerOptions =>
+                    {
+                        sqlServerOptions.EnableRetryOnFailure();
+                        sqlServerOptions.CommandTimeout(60);
+                    })
+                    .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+                });
+
             #endregion
             #region Swagger
             services.AddSwaggerGen(c =>
