@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Dto.IService.IntellWeChat;
+using Dtol.Easydtol;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -177,6 +178,18 @@ namespace IntellWeChat.Controllers
         public ActionResult<WeChatWGWUserResModel> GetWeChartUserInfo(WeChatCodeModel codeModel)
         {
             WeChatWGWUserResModel resModel = _weChatHttpClientService.GetWeChartUserInfo(codeModel.code);
+            return resModel;
+        }
+
+
+
+        /// <summary>
+        ///  (小程序端接口) 20200510 Easy 用户初次进入自愿者小程序验证用户是否是泰便利注册用户，如果是返回泰便利用户中心信息，如果不是返回空   20200510 
+        /// </summary>
+        [HttpPost]
+        public ActionResult<UserInfo> GetWeChartEasyUserInfo(WeChatCodeModel codeModel)
+        {
+            UserInfo resModel = _weChatHttpClientService.GetEasyUserInfo(codeModel.code);
             return resModel;
         }
 

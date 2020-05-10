@@ -34,8 +34,12 @@ namespace Dto.Repository.IntellWeChat
 
         //微官网数据库 20191030
         protected readonly WGWDtolContext WGWDb;
-        protected readonly DbSet<UserInfo> WGWDbSet;
+        protected readonly DbSet<Dtol.WGWdtol.UserInfo> WGWDbSet;
 
+
+        //泰便利Easy 数据库 20200510
+        protected readonly EasyDtolContext EasyDb;
+        protected readonly DbSet<Dtol.Easydtol.UserInfo> EasyDbSet;
 
 
         public WeChatClientRepository(DtolContext context, WGWDtolContext WGWcontext)
@@ -157,9 +161,9 @@ namespace Dto.Repository.IntellWeChat
         /// <summary>
         /// 用户初次进入自愿者小程序验证用户是否是微官网已注册用户，如果是返回微官网用户中心信息，如果不是返回空
         /// </summary>
-        public UserInfo WGWDecrypt(string  code, string appId, string appSecret)
+        public Dtol.WGWdtol.UserInfo WGWDecrypt(string  code, string appId, string appSecret)
         {
-            UserInfo WGWuserInfo = new UserInfo();
+            Dtol.WGWdtol.UserInfo WGWuserInfo = new Dtol.WGWdtol.UserInfo();
 
             if (code == null || code=="")
                 return null;
@@ -180,6 +184,25 @@ namespace Dto.Repository.IntellWeChat
             }
        
             return WGWuserInfo;
+        }
+
+
+        /// <summary>
+        /// 用户初次进入自愿者小程序验证用户是否是泰便利已注册用户，如果是返回泰便利用户中心信息，如果不是返回空  20200510
+        /// </summary>
+        public Dtol.Easydtol.UserInfo EasyDecrypt(string code, string appId, string appSecret)
+        {
+            Dtol.Easydtol.UserInfo userInfo = new Dtol.Easydtol.UserInfo();
+
+            if (code == null || code == "")
+                return null;
+
+            if (String.IsNullOrEmpty(code))
+                return null;
+            WeChatInfoModel oiask = JsonConvert.DeserializeObject<WeChatInfoModel>(GetOpenIdAndSessionKeyString(code, appId, appSecret));
+
+            userInfo = GetEasyUser(oiask.unionid);
+            return userInfo;
         }
 
         /// <summary>  
@@ -256,7 +279,7 @@ namespace Dto.Repository.IntellWeChat
         }
 
         //注册志愿者时 获取 微官网的用户信息
-        public virtual UserInfo GetUser(string unionid)
+        public virtual Dtol.WGWdtol.UserInfo GetUser(string unionid)
         {
             UserInfo WGWuserInfo = new UserInfo();
             var predicate = WhereExtension.True<UserInfo>();
@@ -272,6 +295,26 @@ namespace Dto.Repository.IntellWeChat
 
             return WGWuserInfo;
         }
+
+
+        //注册志愿者时 获取 泰便利用户信息 20200510
+        public virtual Dtol.Easydtol.UserInfo GetEasyUser(string unionid)
+        {
+            Dtol.Easydtol.UserInfo userInfo = new Dtol.Easydtol.UserInfo();
+            var predicate = WhereExtension.True<Dtol.Easydtol.UserInfo>();
+            predicate = predicate.And(p => p.unionid.Contains(unionid));
+            predicate = predicate.And(p => !String.IsNullOrEmpty(p.Mobile));
+
+            var result = EasyDbSet.Where(predicate);
+
+            if (result.Count() > 0)
+            {
+                userInfo = result.First();
+            }
+
+            return userInfo;
+        }
+
 
 
         public virtual string GetPage(string posturl)

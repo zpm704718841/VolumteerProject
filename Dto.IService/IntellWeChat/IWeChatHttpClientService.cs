@@ -6,6 +6,7 @@ using ViewModel.WeChatViewModel.MiddleModel;
 using ViewModel.WeChatViewModel.ResponseModel;
 using ViewModel.WeChatViewModel.RequestViewModel;
 using ViewModel.PublicViewModel;
+using Dtol.Easydtol;
 
 namespace Dto.IService.IntellWeChat
 {
@@ -31,6 +32,11 @@ namespace Dto.IService.IntellWeChat
         /// </summary>
         WeChatWGWUserResModel GetWeChartUserInfo(string code);
 
+
+        /// <summary>
+        /// 20200510 Easy 用户初次进入自愿者小程序验证用户是否是泰便利注册用户，如果是返回泰便利用户中心信息，如果不是返回空  
+        /// </summary>
+        UserInfo GetEasyUserInfo(string code);
 
         int AddToken(V_GetTokenAddModel addModel);
 
