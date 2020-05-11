@@ -25,6 +25,7 @@ using AutofacSerilogIntegration;
 using Microsoft.Extensions.FileProviders;
 using Dto.Repository.IntellVolunteer;
 using Dto.IRepository.IntellVolunteer;
+using ViewModel.WeChatViewModel.MiddleModel;
 
 namespace IntellVolunteer
 {
@@ -50,7 +51,20 @@ namespace IntellVolunteer
             var IRepository = Assembly.Load("Dto.IRepository");
             var Repository = Assembly.Load("Dto.Repository");
             var valitorAssembly = Assembly.Load("ViewModel");
+            #region HttpClientFactory
 
+            services.AddHttpClient("WeChatToken", client =>
+            {
+                client.BaseAddress = new Uri("https://api.weixin.qq.com/cgi-bin/token");
+                client.DefaultRequestHeaders.Add("Accept", "application/vnd.github.v3+json");
+                client.DefaultRequestHeaders.Add("User-Agent", "HttpClientFactoryTesting");
+            });
+
+            #endregion
+            #region 配置文件
+            services.AddOptions();
+            services.Configure<WeChartTokenMiddles>(Configuration.GetSection("WeChatToken"));
+            #endregion
             #region EFCore
             //志愿者小程序 数据库连接
             var connection = Configuration.GetConnectionString("SqlServerConnection");
@@ -85,6 +99,24 @@ namespace IntellVolunteer
                     })
                     .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
                 });
+
+            //泰便利小程序用户中心对接 连接字符串
+            var Easyconnection = Configuration.GetConnectionString("EasyConnection");
+            services.AddDbContext<EasyDtolContext>(options =>
+            options.UseSqlServer(Easyconnection));
+            services.AddDbContext<EasyDtolContext>
+                (options =>
+                {
+                    //sqlServerOptions数据库提供程序级别的可选行为选择器
+                    //UseQueryTrackingBehavior 为通用EF Core行为选择器
+                    options.UseSqlServer(Easyconnection, sqlServerOptions =>
+                    {
+                        sqlServerOptions.EnableRetryOnFailure();
+                        sqlServerOptions.CommandTimeout(60);
+                    })
+                    .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+                });
+
             #endregion
 
             #region Swagger

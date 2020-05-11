@@ -14,6 +14,7 @@ using ViewModel.VolunteerModel.RequsetModel;
 using ViewModel.VolunteerBackground.MiddleModel;
 using ViewModel.VolunteerBackground.ResponseModel;
 using ViewModel.PublicViewModel;
+using Serilog;
 
 
 namespace Dto.Service.IntellVolunteer
@@ -25,14 +26,24 @@ namespace Dto.Service.IntellVolunteer
         private readonly IVAttachmentRepository _IVAttachmentRepository;
         private readonly IVolunteer_Relate_TypeRepository _IVolunteer_Relate_TypeRepository;
         private readonly IMapper _IMapper;
- 
+        private readonly IUserLogin_LogRepository _userLogin_Log;
+        private readonly ILoginType_LogRepository _loginType_Log;
+        private readonly ILoginTypeRepository _loginTypeRepository;
+        private readonly ILogger _ILogger;
 
-        public VolunteerService(IVolunteerInfoRepository iuserInfoRepository,  IMapper mapper, IVolunteer_Relate_TypeRepository Relate_TypeRepository, IVAttachmentRepository AttachmentRepository)
+
+        public VolunteerService(IVolunteerInfoRepository iuserInfoRepository,  IMapper mapper, IVolunteer_Relate_TypeRepository Relate_TypeRepository,
+            IVAttachmentRepository AttachmentRepository, IUserLogin_LogRepository userLogin_Log, ILoginType_LogRepository loginType_Log,
+            ILoginTypeRepository loginType, ILogger logger)
         {
             _IVolunteerInfoRepository = iuserInfoRepository;
             _IVolunteer_Relate_TypeRepository = Relate_TypeRepository;
             _IVAttachmentRepository = AttachmentRepository;
             _IMapper = mapper;
+            _userLogin_Log = userLogin_Log;
+            _loginType_Log = loginType_Log;
+            _loginTypeRepository = loginType;
+            _ILogger = logger;
         }
 
         //添加用户
@@ -73,9 +84,110 @@ namespace Dto.Service.IntellVolunteer
                 int c = _IVAttachmentRepository.SaveChanges();
             }
 
+            //用户注册后 默认登录成功  20200511
+            //保存登录时间 20200511
+            SaveLoginInfo(VuserAddViewModel.ID);
+            //保存登录方式 20200511
+            SaveLoginTypeInfo(VuserAddViewModel.ID);
+
+
             return a;
         }
-       
+
+
+
+
+        //记录 用户登录 时间（参数：uid）
+        public BaseViewModel SaveLoginInfo(string uid)
+        {
+            BaseViewModel baseView = new BaseViewModel();
+            if (uid == "")
+            {
+                baseView.Message = "参数为空";
+                baseView.ResponseCode = 2;
+            }
+            else
+            {
+                try
+                {
+                    UserLogin_Log userLogin = new UserLogin_Log();
+                    userLogin.ID = Guid.NewGuid().ToString();
+                    userLogin.uid = uid;
+                    userLogin.Action = "登录系统";
+                    userLogin.status = "true";
+                    userLogin.CreateDate = DateTime.Now;
+                    _userLogin_Log.Add(userLogin);
+                    int a = _userLogin_Log.SaveChanges();
+                    if (a > 0)
+                    {
+                        baseView.Message = "保存成功";
+                        baseView.ResponseCode = 0;
+                    }
+                    else
+                    {
+                        baseView.Message = "保存失败";
+                        baseView.ResponseCode = 1;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    baseView.Message = "出现异常";
+                    baseView.ResponseCode = 3;
+                    _ILogger.Information("记录用户登录时间出现异常" + ex.Message + ex.StackTrace + ex.Source);
+                }
+            }
+            return baseView;
+        }
+
+
+        //记录 用户选择登录方式（参数：uid）(默认人脸识别登录)
+        public BaseViewModel SaveLoginTypeInfo(string uid)
+        {
+            BaseViewModel baseView = new BaseViewModel();
+            if (uid == "")
+            {
+                baseView.Message = "参数为空";
+                baseView.ResponseCode = 2;
+            }
+            else
+            {
+                try
+                {
+                    //获取人脸登录方式  默认该用户选用人脸识别登录
+                    LoginType LoginType = _loginTypeRepository.SearchFaceModel();
+
+                    LoginType_Log log = new LoginType_Log();
+                    log.ID = Guid.NewGuid().ToString();
+                    log.uid = uid;
+                    log.typeid = LoginType.ID;
+                    log.status = "true";
+                    log.CreateDate = DateTime.Now;
+                    _loginType_Log.Add(log);
+                    int a = _loginType_Log.SaveChanges();
+                    if (a > 0)
+                    {
+                        baseView.Message = "保存成功";
+                        baseView.ResponseCode = 0;
+                    }
+                    else
+                    {
+                        baseView.Message = "保存失败";
+                        baseView.ResponseCode = 1;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    baseView.Message = "出现异常";
+                    baseView.ResponseCode = 3;
+                    _ILogger.Information("记录用户选择登录方式出现异常" + ex.Message + ex.StackTrace + ex.Source);
+                }
+            }
+            return baseView;
+        }
+
+
+
+
         //查询用户
         public List<VolunteerSearchMiddle> Volunteer_Search(VolunteerSearchViewModel VSearchViewModel)
         {
@@ -281,7 +393,6 @@ namespace Dto.Service.IntellVolunteer
                 model.VAttachmentAddList = _IMapper.Map<List<VAttachment>, List<VAttachmentAddViewModel>>(VAttachmentList);
 
             }
-
 
             return model;
         }

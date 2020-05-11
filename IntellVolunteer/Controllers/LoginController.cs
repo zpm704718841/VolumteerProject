@@ -13,6 +13,10 @@ using Dto.IService.IntellVolunteer;
 using SystemFilter.PublicFilter;
 using ViewModel.VolunteerModel.RequsetModel;
 using ViewModel.VolunteerModel.ResponseModel;
+using Dtol.Easydtol;
+using ViewModel.WeChatViewModel.RequestViewModel;
+using ViewModel.WeChatViewModel.MiddleModel;
+using System.Net.Http;
 
 namespace IntellVolunteer.Controllers
 {
@@ -20,15 +24,36 @@ namespace IntellVolunteer.Controllers
     [ApiController]
     public class LoginController: ControllerBase
     {
-        private readonly ILoginService  _loginService;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly ILoginService _loginService;
         private readonly ILogger _ILogger;
+        private IOptions<WeChartTokenMiddles> _IOptions;
+        private readonly IWeChatHttpClientService _weChatHttpClientService;
         //20200510
 
-        public LoginController(ILoginService  loginService, ILogger logger)
+        public LoginController(ILoginService  loginService, ILogger logger, IOptions<WeChartTokenMiddles> iOptions,
+            IWeChatHttpClientService weChatHttpClientService, IHttpClientFactory httpClientFactory)
         {
+            _httpClientFactory = httpClientFactory;
+            _IOptions = iOptions;
             _loginService = loginService;
             _ILogger = logger;
+            _weChatHttpClientService = weChatHttpClientService;
         }
+
+
+
+        /// <summary>
+        ///  (小程序端接口) 20200510 Easy 用户初次进入自愿者小程序验证用户是否是泰便利注册用户，如果是返回泰便利用户中心信息，如果不是返回空   20200510 
+        /// </summary>
+        [HttpPost]
+        public ActionResult<UserInfo> GetWeChartEasyUserInfo(WeChatCodeModel codeModel)
+        {
+            UserInfo resModel = _weChatHttpClientService.GetEasyUserInfo(codeModel.code);
+            return resModel;
+        }
+
+
 
 
         /// <summary>

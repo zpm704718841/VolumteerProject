@@ -61,7 +61,7 @@ namespace Dto.Repository.IntellVolunteer
             var res = new Volunteer_Info();
             //查询条件
             var predicate = WhereExtension.True<Volunteer_Info>();//初始化where表达式
-
+            predicate = predicate.And(p => !p.Status.Equals("4"));
             if (!String.IsNullOrEmpty(id))
             {
                 predicate = predicate.And(p => p.ID.Contains(id));

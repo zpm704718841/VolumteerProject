@@ -25,10 +25,12 @@ namespace Dto.Service.IntellVolunteer
         private readonly IUserLogin_LogRepository _userLogin_Log;
         private readonly IV_ReadLogRepository _v_ReadLog;
         private readonly ISQLRepository _sQLRepository;
+        private readonly IVolunteerInfoRepository _volunteerInfoRepository;
 
 
         public LoginService(IMapper mapper, ILoginType_LogRepository loginType_Log, ILoginTypeRepository loginTypeRepository, 
-            ILogger logger, IUserLogin_LogRepository userLogin, IV_ReadLogRepository v_Read, ISQLRepository sQLRepository)
+            ILogger logger, IUserLogin_LogRepository userLogin, IV_ReadLogRepository v_Read, ISQLRepository sQLRepository,
+            IVolunteerInfoRepository volunteerInfo)
         {
             _IMapper = mapper;
             _loginType_Log = loginType_Log;
@@ -37,6 +39,7 @@ namespace Dto.Service.IntellVolunteer
             _userLogin_Log = userLogin;
             _v_ReadLog = v_Read;
             _sQLRepository = sQLRepository;
+            _volunteerInfoRepository = volunteerInfo;
         }
 
 
@@ -181,36 +184,32 @@ namespace Dto.Service.IntellVolunteer
                             }
                             else
                             {
-                                ////获取 用的 审核状态 20200426
-                                //var userinfo = _userInfoRepository.SearchByUIDModel(uidViewModel);
-                                //if (userinfo != null)
-                                //{
-                                //    if (userinfo.Status == "0")
-                                //    {
-                                //        viewModel.ResponseCode = 4;
-                                //        viewModel.Message = "游客用户已登录";
-                                //    }
-                                //    if (userinfo.Status == "1")
-                                //    {
-                                //        viewModel.ResponseCode = 0;
-                                //        viewModel.Message = "已登录";
-                                //    }
-                                //    if (userinfo.Status == "2")
-                                //    {
-                                //        viewModel.ResponseCode = 5;
-                                //        viewModel.Message = "待审核用户已登录";
-                                //    }
-                                //    if (userinfo.Status == "3")
-                                //    {
-                                //        viewModel.ResponseCode = 6;
-                                //        viewModel.Message = "审核不通过用户已登录";
-                                //    }
-                                //}
-                                //else
-                                //{
-                                //    viewModel.ResponseCode = 1;
-                                //    viewModel.Message = "未登录";
-                                //}
+                                //获取 用的 审核状态 20200426
+                                var userinfo = _volunteerInfoRepository.SearchInfoByID(uidViewModel.VID);
+                                if (userinfo != null)
+                                {
+                     
+                                    if (userinfo.Status == "1")
+                                    {
+                                        viewModel.ResponseCode = 0;
+                                        viewModel.Message = "已登录";
+                                    }
+                                    if (userinfo.Status == "0")
+                                    {
+                                        viewModel.ResponseCode = 5;
+                                        viewModel.Message = "待审核用户已登录";
+                                    }
+                                    if (userinfo.Status == "3")
+                                    {
+                                        viewModel.ResponseCode = 6;
+                                        viewModel.Message = "审核不通过用户已登录";
+                                    }
+                                }
+                                else
+                                {
+                                    viewModel.ResponseCode = 1;
+                                    viewModel.Message = "未登录";
+                                }
                             }
                         }
 
