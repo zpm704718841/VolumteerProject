@@ -37,7 +37,6 @@ namespace Dto.Service.IntellVolunteer
             _IOptions = iOptions;
             _httpClientFactory = httpClientFactory;
             _IWeChatClientRepository = repository;
- 
             _IMapper = mapper;
         }
 
@@ -82,7 +81,23 @@ namespace Dto.Service.IntellVolunteer
 
             return token;
         }
- 
+
+
+
+        //20200514 根据code 获取openid
+        public OpenidViewModel GetWeChartOpenid(string code)
+        {
+            OpenidViewModel openidView = new OpenidViewModel();
+            string openid = _IWeChatClientRepository.GetOpenIdAndSessionKeyString(code, _IOptions.Value.appid, _IOptions.Value.secret);
+
+            WeChatInfoModel oiask = JsonConvert.DeserializeObject<WeChatInfoModel>(openid);
+            openidView.openid = oiask.openid;
+
+            return openidView;
+        }
+
+
+
 
         /// <summary>
         /// 20200510 Easy 用户初次进入自愿者小程序验证用户是否是泰便利注册用户，如果是返回泰便利用户中心信息，如果不是返回空  

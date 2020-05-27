@@ -43,6 +43,8 @@ namespace Dto.Service.IntellVolunteer
         }
 
 
+
+
         //记录 用户登录 时间（参数：uid）  
         public BaseViewModel SaveLoginInfo(string uid)
         {

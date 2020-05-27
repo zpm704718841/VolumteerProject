@@ -74,7 +74,7 @@ namespace Dto.Service.IntellVolunteer
                 }
                 else
                 {
-                    var lists = searchresult.ondutyClaims_Infos[i].mydutyClaim_Infos.Where(a => a.OndutyClaims_InfoId == searchresult.ondutyClaims_Infos[i].id).ToList();
+                    var lists = searchresult.ondutyClaims_Infos[i].mydutyClaim_Infos.Where(a => a.OndutyClaims_InfoId == searchresult.ondutyClaims_Infos[i].id && a.StartDutyTime >= DateTime.Now).ToList();
                     result.containOnDutyMiddleMiddles[i].mydutyClaim_Infos = _IMapper.Map<List<MydutyClaim_Info>,List<MydutyClaimInfoMiddleModel>>(lists);
 
                     CountIsDuty = searchresult.ondutyClaims_Infos[i].mydutyClaim_Infos.Count();

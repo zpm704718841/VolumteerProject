@@ -309,7 +309,7 @@ namespace Dto.Repository.IntellWeChat
             predicate = predicate.And(p => p.unionid.Equals(unionid));
         
 
-            var result = EasyDbSet.Where(predicate);
+            var result = EasyDbSet.Where(predicate).ToList();
 
             if (result.Count() > 0)
             {

@@ -31,11 +31,13 @@ namespace Dto.Service.IntellVolunteer
 
         public void getMydutyInfoAddService(MydutyClaimInfoAddViewModel mydutyClaimInfoAddViewModel)
         {
-            
-               var result = _IMapper.Map<MydutyClaimInfoAddViewModel, MydutyClaim_Info > (mydutyClaimInfoAddViewModel);
-            _IMydutyClaimInfoRepository.Add(result);
-            _IMydutyClaimInfoRepository.SaveChanges();
 
+            if (mydutyClaimInfoAddViewModel.StartDutyTime >= DateTime.Now)
+            {
+                var result = _IMapper.Map<MydutyClaimInfoAddViewModel, MydutyClaim_Info>(mydutyClaimInfoAddViewModel);
+                _IMydutyClaimInfoRepository.Add(result);
+                _IMydutyClaimInfoRepository.SaveChanges();
+            }
         }
 
         public List<MydutyClaimInfoSearchMiddleModel> getMydutyInfoService(MydutyClaimInfoSearchViewModel  mydutyClaimInfoSearchViewModel)

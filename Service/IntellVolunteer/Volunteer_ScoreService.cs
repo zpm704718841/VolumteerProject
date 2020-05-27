@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using SystemFilter.PublicFilter;
 using ViewModel.VolunteerModel.MiddleModel;
 using ViewModel.VolunteerModel.RequsetModel;
 
@@ -35,19 +36,27 @@ namespace Dto.Service.IntellVolunteer
 
         public List<VScoreRankMiddle> GetMyScoreRanks(SearchByVIDModel searchModel)
         {
-  
+            DEncrypt encrypt = new DEncrypt();
             List<VScoreRankMiddle> result = _SqlRepository.GetScoreRank();
+            foreach (var item in result)
+            {
+                item.Name = encrypt.Decrypt(item.Name);
+            }
             List<VScoreRankMiddle> middle = result.Where(o => o.VID.Equals(searchModel.VID)).ToList();
-
+           
             return middle ;
         }
 
 
         public List<VScoreRankMiddle> GetScoreRanks()
         {
-    
+            DEncrypt encrypt = new DEncrypt();
             List<VScoreRankMiddle> result = _SqlRepository.GetScoreRank();
-            
+            foreach (var item in result)
+            {
+                item.Name = encrypt.Decrypt(item.Name);
+                
+            }
             return result;
         }
 

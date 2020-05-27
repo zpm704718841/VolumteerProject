@@ -15,6 +15,7 @@ using ViewModel.VolunteerBackground.MiddleModel;
 using ViewModel.VolunteerBackground.ResponseModel;
 using ViewModel.PublicViewModel;
 using Serilog;
+using SystemFilter.PublicFilter;
 
 
 namespace Dto.Service.IntellVolunteer
@@ -49,11 +50,17 @@ namespace Dto.Service.IntellVolunteer
         //添加用户
         public int User_Add(VolunteerAddViewModel VuserAddViewModel)
         {
+            DEncrypt encrypt = new DEncrypt();
             //再次获取  志愿者编号以免提交时出现重复编号
             var vno = GetNewVNO();
             var user_Info = _IMapper.Map<VolunteerAddViewModel, Volunteer_Info>(VuserAddViewModel);
             user_Info.VNO = vno;
             user_Info.Status = "0";
+            // 字段加密 20200521
+            user_Info.Name = encrypt.Encrypt(user_Info.Name);
+            user_Info.CertificateID = encrypt.Encrypt(user_Info.CertificateID);
+            user_Info.Mobile = encrypt.Encrypt(user_Info.Mobile);
+
             //保存基本信息
             _IVolunteerInfoRepository.Add(user_Info);
             int a = _IVolunteerInfoRepository.SaveChanges();
@@ -378,9 +385,12 @@ namespace Dto.Service.IntellVolunteer
 
         public VolunteerAddViewModel GetMyInfos(SearchByVIDModel vidModel)
         {
+            DEncrypt encrypt = new DEncrypt();
             VolunteerAddViewModel model = new VolunteerAddViewModel();
 
             Volunteer_Info info = _IVolunteerInfoRepository.SearchInfoByID(vidModel.VID);
+
+           
 
             if (info != null && info.ID !=null)
             {
@@ -392,6 +402,9 @@ namespace Dto.Service.IntellVolunteer
                 List<VAttachment> VAttachmentList = _IVAttachmentRepository.GetMyList(vidModel.VID);
                 model.VAttachmentAddList = _IMapper.Map<List<VAttachment>, List<VAttachmentAddViewModel>>(VAttachmentList);
 
+                model.Name = encrypt.Decrypt(model.Name);
+                model.CertificateID = encrypt.Decrypt(model.CertificateID);
+                model.Mobile = encrypt.Decrypt(model.Mobile);
             }
 
             return model;
@@ -401,7 +414,14 @@ namespace Dto.Service.IntellVolunteer
 
         public int User_Edit(VolunteerAddViewModel VuserAddViewModel)
         {
+            DEncrypt encrypt = new DEncrypt();
             var user_Info = _IMapper.Map<VolunteerAddViewModel, Volunteer_Info>(VuserAddViewModel);
+
+            // 字段加密 20200521
+            user_Info.Name = encrypt.Encrypt(user_Info.Name);
+            user_Info.CertificateID = encrypt.Encrypt(user_Info.CertificateID);
+            user_Info.Mobile = encrypt.Encrypt(user_Info.Mobile);
+
             _IVolunteerInfoRepository.EditInfo(user_Info);
             int a = _IVolunteerInfoRepository.SaveChanges();
 

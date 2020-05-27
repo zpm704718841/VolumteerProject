@@ -37,5 +37,8 @@ namespace Dto.IService.IntellVolunteer
 
         //记录 用户退出登录操作 时间（参数：uid）
         BaseViewModel UpdateLoginInfo(string uid);
+
+
+ 
     }
 }

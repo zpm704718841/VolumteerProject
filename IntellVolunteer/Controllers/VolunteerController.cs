@@ -149,7 +149,7 @@ namespace IntellVolunteer.Controllers
 
 
         /// <summary>
-        /// (小程序端接口)  验证是否在志愿者系统注册成功（返回状态：未注册；审核中；审核通过；审核不通过）  （缓存 AI泰达用户 ID）
+        /// (小程序端接口)  验证是否在志愿者系统注册成功（返回状态：未注册；审核中；审核通过；审核不通过）  （缓存 Easy泰便利用户 ID）
         /// </summary>
         /// <returns></returns>
         [HttpPost]

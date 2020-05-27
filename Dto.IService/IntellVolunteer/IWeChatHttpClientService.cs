@@ -7,6 +7,7 @@ using ViewModel.WeChatViewModel.ResponseModel;
 using ViewModel.WeChatViewModel.RequestViewModel;
 using ViewModel.PublicViewModel;
 using Dtol.Easydtol;
+using ViewModel.VolunteerModel.RequsetModel;
 
 namespace Dto.IService.IntellVolunteer
 {
@@ -33,5 +34,8 @@ namespace Dto.IService.IntellVolunteer
         Task<BaseViewModel> SendMessageService(SendMessageModel model);
 
         string GetPage(string posturl, string postData);
+
+        //20200514 根据code 获取openid
+        OpenidViewModel GetWeChartOpenid(string code);
     }
 }

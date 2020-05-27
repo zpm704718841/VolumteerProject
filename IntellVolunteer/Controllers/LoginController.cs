@@ -43,6 +43,18 @@ namespace IntellVolunteer.Controllers
 
 
 
+
+        /// <summary>
+        ///  (小程序端接口) 20200514 根据code 获取openid
+        /// </summary>
+        [HttpPost]
+        public ActionResult<OpenidViewModel> GetWeChartOpenid(WeChatCodeModel codeModel)
+        {
+            OpenidViewModel resModel = _weChatHttpClientService.GetWeChartOpenid(codeModel.code);
+            return resModel;
+        }
+
+
         /// <summary>
         ///  (小程序端接口) 20200510 Easy 用户初次进入自愿者小程序验证用户是否是泰便利注册用户，如果是返回泰便利用户中心信息，如果不是返回空   20200510 
         /// </summary>

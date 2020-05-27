@@ -54,7 +54,7 @@ namespace Dto.Repository.IntellVolunteer
                 //    result = "false";
                 //}
                 return result;
-
+                connection.Close();
             }
  
         }
@@ -83,6 +83,8 @@ namespace Dto.Repository.IntellVolunteer
                 {
                     result = "false";
                 }
+
+                connection.Close();
                 return result;
 
             }
@@ -98,7 +100,7 @@ namespace Dto.Repository.IntellVolunteer
                 var contentID = string.Empty;
                 connection.Open();
 
-                string sql = " select id from VolunteerActivity where id in (select ContentID FROM VA_Sign where vid = '" + VID + "') and Stime<= GETDATE() and Etime> GETDATE() ";
+                string sql = " select id from VolunteerActivity where id in (select ContentID FROM VA_Sign where vid = '" + VID + "') and Stime<= " + DateTime.Now + " and Etime>=" + DateTime.Now + " ";
                 var res = connection.Query<dynamic>(sql);
                 if (res.ToList().Count != 0)
                 {
@@ -110,7 +112,7 @@ namespace Dto.Repository.IntellVolunteer
                     }
                     contentID = model.VID;
                 }
-
+                connection.Close();
                 return contentID;
 
             }
@@ -129,7 +131,7 @@ namespace Dto.Repository.IntellVolunteer
                 string sql = " select bb.*,cc.Name,cc.Nickname,cc.VNO,cc.Community,cc.Headimgurl from (select aa.VID,aa.scores,rank () over( order by aa.scores desc) rankNo from ( " +
                             " select vid, sum(score) as scores  from Volunteer_Score  group by vid )as aa ) as bb left join Volunteer_Info cc on bb.VID = cc.ID ";
                 var res = connection.Query<VScoreRankMiddle>(sql).ToList();
-
+                connection.Close();
                 return res;
 
             }
@@ -162,7 +164,7 @@ namespace Dto.Repository.IntellVolunteer
                 {
                     hours = "0";
                 }
-
+                connection.Close();
                 return hours;
 
             }
@@ -177,6 +179,8 @@ namespace Dto.Repository.IntellVolunteer
                 connection.Open();
                 string sql = " select  *   from VHelpArea where  id in (select ContentID FROM  VHA_Sign where VID = '" + VID + "' and flag = '2' and Status = '1')  ";
                 var res = connection.Query<VHA_SignMyListMiddle>(sql).ToList();
+
+                connection.Close();
                 return res;
 
             }
@@ -200,6 +204,8 @@ namespace Dto.Repository.IntellVolunteer
                         Services += item.Name + "、";
                     }
                 }
+
+                connection.Close();
                 return Services;
 
             }
@@ -223,6 +229,8 @@ namespace Dto.Repository.IntellVolunteer
                         Services += item.Name + "、";
                     }
                 }
+
+                connection.Close();
                 return Services;
 
             }
@@ -245,6 +253,8 @@ namespace Dto.Repository.IntellVolunteer
                         ID = item.column;
                     }
                 }
+
+                connection.Close();
                 return ID;
 
             }
@@ -262,6 +272,8 @@ namespace Dto.Repository.IntellVolunteer
                            " where aa.VolunteerID = '"+ VID + "' and bb.ParentCode = '1') as cc right join VAttachment dd "+
                            " on cc.VolunteerID = dd.formid and cc.ID = dd.bak1 where dd.formid = '"+ VID + "' order by cc.id";
                 var res = connection.Query<SkillAndFileViewModel>(sql).ToList();
+
+                connection.Close();
                 return res;
 
             }

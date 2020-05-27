@@ -624,29 +624,68 @@ namespace Dto.Service.IntellVolunteer
         {
             VA_HandleGetMyResModel MyResModel = new VA_HandleGetMyResModel();
             List<VA_Handle> handleList = _Va_HandleRepository.GetMySign(model.VID, model.ContentID);
-            foreach(var itme in handleList)
+
+            if (handleList.Count > 0)
             {
-                //签到
-                if (itme.type == "in")
+                foreach (var itme in handleList)
                 {
-                    MyResModel.SignUpTime = itme.CheckTime.ToString();
-                    MyResModel.SignUpAddress = itme.CheckAddress;
+                    if (!string.IsNullOrEmpty(itme.type))
+                    {
+                        //签到
+                        if (itme.type == "in")
+                        {
+                            MyResModel.SignUpTime = itme.CheckTime.ToString();
+                            MyResModel.SignUpAddress = itme.CheckAddress;
+                        }
+                        //上传现场图片
+                        if (itme.type == "img")
+                        {
+                            List<VAttachment> list = _IVAttachmentRepository.GetMyList(itme.ID);
+                            List<VAttachmentAddViewModel> newlist = _IMapper.Map<List<VAttachment>, List<VAttachmentAddViewModel>>(list);
+                            MyResModel.VAttachmentList = newlist;
+                        }
+                        //签退
+                        if (itme.type == "out")
+                        {
+                            MyResModel.SignOutTime = itme.CheckTime.ToString();
+                            MyResModel.SignOutAddress = itme.CheckAddress;
+                        }
+                    }
+                    else
+                    {
+                        //签到
+                        if (itme.type == "in")
+                        {
+                            MyResModel.SignUpTime = "";
+                            MyResModel.SignUpAddress = "";
+                        }
+                        //上传现场图片
+                        if (itme.type == "img")
+                        {
+                            MyResModel.VAttachmentList = null;
+                        }
+                        //签退
+                        if (itme.type == "out")
+                        {
+                            MyResModel.SignOutTime = "";
+                            MyResModel.SignOutAddress = "";
+                        }
+                    }
+
                 }
-                //上传现场图片
-                if (itme.type == "img")
-                {
-                    List<VAttachment> list = _IVAttachmentRepository.GetMyList(itme.ID);
-                    List<VAttachmentAddViewModel> newlist = _IMapper.Map<List<VAttachment>, List<VAttachmentAddViewModel>>(list);
-                    MyResModel.VAttachmentList = newlist;
-                }
-                //签退
-                if (itme.type == "out")
-                {
-                    MyResModel.SignOutTime = itme.CheckTime.ToString();
-                    MyResModel.SignOutAddress = itme.CheckAddress;
-                }
+            }
+            else
+            {
+
+                    MyResModel.SignUpTime = "";
+                    MyResModel.SignUpAddress = "";
+                    MyResModel.VAttachmentList = null;
+                    MyResModel.SignOutTime = "";
+                    MyResModel.SignOutAddress = "";
                
             }
+
+         
             return MyResModel;
         }
 
@@ -822,6 +861,7 @@ namespace Dto.Service.IntellVolunteer
         }
 
         //首页 志愿活动推荐( 志愿者VID )
+        //首页 志愿活动推荐( 志愿者VID )
         public List<VolunteerActivitySearchMiddle> GetMyRecommendList(string VID)
         {
             //无擅长技能
@@ -835,89 +875,194 @@ namespace Dto.Service.IntellVolunteer
 
             //判断是否是注册用户
             if (CheckInfos(VID))
-            {
-                var VolunteerInfo = _IVolunteerInfoRepository.SearchInfoByID(VID);
-                //根据活动地址推荐 两公里以内
-                string address = VolunteerInfo.Address;
-
-                if (address != "")
+            {  
+                //根据志愿者擅长技能推荐  与  根据志愿者服务领域推荐
+                var typelist = _IVolunteer_Relate_TypeRepository.GetMyTypeList(VID);
+                List<string> typeIDs = new List<string>();
+                foreach (var item in lists)
                 {
-                    string content = GetFunction(address);
-                    JObject jo = (JObject)JsonConvert.DeserializeObject(content);//或者JObject jo = JObject.Parse(jsonText);
-                    if (jo["status"].ToString() == "0")
+                    //判断该志愿者是否已经报名
+                    VA_Sign Sign = _IVA_SignRepository.GetNewSign(VID, item.ID);
+                    if (Sign != null && Sign.ID != null)
                     {
-                        longitude = jo["result"]["location"]["lng"].ToString();
-                        latitude = jo["result"]["location"]["lat"].ToString();
+                        //已报名
+                        item.bak1 = "1";
                     }
-                }
-                 
-            }
-          
-            
-            //根据志愿者擅长技能推荐  与  根据志愿者服务领域推荐
-            var typelist = _IVolunteer_Relate_TypeRepository.GetMyTypeList(VID);
-
-      
-            List<string> typeIDs = new List<string>();
-            foreach (var item in lists)
-            {
-                //活动服务领域、擅长技能
-                var activityType = _IVActivity_Relate_TypeRepository.GetRelateList(item.ID);
-                foreach (var type in activityType)
-                {
-                    typeIDs.Add(type.TypeID);
-                }
-                if (typeIDs.Contains(SkillID))
-                {
-                    item.bak2 = "1";
-                }
-                else
-                {
-                    bool isContains = false;
-                    typelist.ForEach(o => isContains |= typeIDs.Contains(o.TypeID));
-                    if (isContains)
+                    else
                     {
-                        item.bak2 = "1";
+                        //未报名
+                        item.bak1 = "0";
                     }
-                }
-             
 
-                //根据活动地址推荐 两公里以内
-                var status = CheckAddress(double.Parse(longitude), double.Parse(latitude), double.Parse(item.longitude), double.Parse(item.latitude), 2.0);
-                if (status)
-                {
-                    item.bak2 = "1";
-                }
-                else
-                {
-                    item.bak2 = "0";
-                }
+                    //判断是否已经活动开始
+                    if (item.Stime <= DateTime.Now)
+                    {
+                        item.bak1 = "2";
+                    }
 
-                //判断 活动地址与志愿者注册详细地址间距离
-                double dis = GetDistance(double.Parse(longitude), double.Parse(latitude), double.Parse(item.longitude), double.Parse(item.latitude));
-                item.bak3 = dis.ToString("f2");
+                    //判断是否已经活动结束
+                    if (item.Etime <= DateTime.Now)
+                    {
+                        item.bak1 = "3";
+                    }
+                    //根据志愿者擅长技能推荐  与  根据志愿者服务领域推荐
+                    //活动服务领域、擅长技能
+                    var activityType = _IVActivity_Relate_TypeRepository.GetRelateList(item.ID);
+                    foreach (var type in activityType)
+                    {
+                        typeIDs.Add(type.TypeID);
+                    }
+                    if (typeIDs.Contains(SkillID))
+                    {
+                        item.bak2 = "3";
+                    }
+                    else
+                    {
+                        bool isContains = false;
+                        typelist.ForEach(o => isContains |= typeIDs.Contains(o.TypeID));
+                        if (isContains)
+                        {
+                            item.bak2 = "3";
+                        }
+                    }
+
+                    var VolunteerInfo = _IVolunteerInfoRepository.SearchInfoByID(VID);
+                    //根据活动地址推荐 两公里以内
+                    string address = "天津市滨海新区开发区" + VolunteerInfo.Subdistrict + VolunteerInfo.Address;
+
+                    if (address != "" && address != null)
+                    {
+                        string content = GetFunction(address);
+                        JObject jo = (JObject)JsonConvert.DeserializeObject(content);//或者JObject jo = JObject.Parse(jsonText);
+                        if (jo["status"].ToString() == "0")
+                        {
+                            longitude = jo["result"]["location"]["lng"].ToString();
+                            latitude = jo["result"]["location"]["lat"].ToString();
+                        }
+                    }
 
 
-                //计算 已报名人数
-                int nums = _IVA_SignRepository.GetSingNum(item.ID);
-                item.bak4 = nums.ToString();
+                    //根据活动地址推荐 两公里以内
+                    var status = CheckAddress(double.Parse(longitude), double.Parse(latitude), double.Parse(item.longitude), double.Parse(item.latitude), 2.0);
+                    if (status)
+                    {
+                        item.bak2 = "4";
+                    }
+                    else
+                    {
+                        item.bak2 = "0";
+                    }
 
-                //活动报名人数上限
-                int totalnum = _IVActivity_Relate_TypeRepository.GetSum(item.ID, "");
-                item.bak5 = totalnum.ToString();
+                    //判断 活动地址与志愿者注册详细地址间距离
+                    double dis = GetDistance(double.Parse(longitude), double.Parse(latitude), double.Parse(item.longitude), double.Parse(item.latitude));
+                    item.bak3 = dis.ToString("f2");
 
-                if (item.Status == "1")
-                {
-                    item.bak2 = "1";
-                }
-                else
-                {
-                    item.bak2 = "0";
+
+                    //计算 已报名人数
+                    int nums = _IVA_SignRepository.GetSingNum(item.ID);
+                    item.bak4 = nums.ToString();
+
+                    //活动报名人数上限
+                    int totalnum = _IVActivity_Relate_TypeRepository.GetSum(item.ID, "");
+                    item.bak5 = totalnum.ToString();
+
+                    if (item.Status == "1")
+                    {
+                        item.bak2 = "5";
+                    }
+                    else
+                    {
+                        item.bak2 = "0";
+                    }
+
                 }
             }
+            else
+            {
+                
+
+                //根据志愿者擅长技能推荐  与  根据志愿者服务领域推荐
+                var typelist = _IVolunteer_Relate_TypeRepository.GetMyTypeList(VID);
+
+
+                List<string> typeIDs = new List<string>();
+                foreach (var item in lists)
+                {
+                    
+                    //活动服务领域、擅长技能
+                    var activityType = _IVActivity_Relate_TypeRepository.GetRelateList(item.ID);
+                    foreach (var type in activityType)
+                    {
+                        typeIDs.Add(type.TypeID);
+                    }
+                    if (typeIDs.Contains(SkillID))
+                    {
+                        item.bak2 = "3";
+                    }
+                    else
+                    {
+                        bool isContains = false;
+                        typelist.ForEach(o => isContains |= typeIDs.Contains(o.TypeID));
+                        if (isContains)
+                        {
+                            item.bak2 = "3";
+                        }
+                    }
+
+
+                    //根据活动地址推荐 两公里以内
+                    var status = CheckAddress(double.Parse(longitude), double.Parse(latitude), double.Parse(item.longitude), double.Parse(item.latitude), 2.0);
+                    if (status)
+                    {
+                        item.bak2 = "4";
+                    }
+                    else
+                    {
+                        item.bak2 = "0";
+                    }
+
+                    //判断 活动地址与志愿者注册详细地址间距离
+                    double dis = GetDistance(double.Parse(longitude), double.Parse(latitude), double.Parse(item.longitude), double.Parse(item.latitude));
+                    item.bak3 = dis.ToString("f2");
+
+
+                    //计算 已报名人数
+                    int nums = _IVA_SignRepository.GetSingNum(item.ID);
+                    item.bak4 = nums.ToString();
+
+                    //活动报名人数上限
+                    int totalnum = _IVActivity_Relate_TypeRepository.GetSum(item.ID, "");
+                    item.bak5 = totalnum.ToString();
+
+                    //未报名
+                    item.bak1 = "0";
+                    //判断是否已经活动开始
+                    if (item.Stime <= DateTime.Now)
+                    {
+                        item.bak1 = "2";
+                    }
+                    //判断是否已经活动结束
+                    if (item.Etime <= DateTime.Now)
+                    {
+                        item.bak1 = "3";
+                    }
+
+                    //活动状态
+                    if (item.Status == "1")
+                    {
+                        item.bak2 = "5";
+                    }
+                    else
+                    {
+                        item.bak2 = "0";
+                    }
+
+                }
+            }
+
 
             Searches = _IMapper.Map<List<VolunteerActivity>, List<VolunteerActivitySearchMiddle>>(lists);
-            Searches = Searches.OrderByDescending(o => o.bak2).ToList();
+            Searches = Searches.OrderBy(o=>o.bak1).ThenByDescending(o => o.bak2).ThenBy(o => o.bak3).ToList();
             return Searches;
         }
 
