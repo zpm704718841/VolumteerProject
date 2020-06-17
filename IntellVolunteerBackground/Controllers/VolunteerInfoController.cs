@@ -16,13 +16,13 @@ namespace IntellVolunteerBackground.Controllers
     [ApiController]
     public class VolunteerInfoController : ControllerBase
     {
-        private readonly ILogger _ILogger;
+        //private readonly ILogger _ILogger;
         private readonly IVolunteerService _volunteerService;
 
-        public VolunteerInfoController(IVolunteerService volunteerervice, ILogger log)
+        public VolunteerInfoController(IVolunteerService volunteerervice )
         {
             _volunteerService = volunteerervice;
-            _ILogger = log;
+            //_ILogger = log;
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace IntellVolunteerBackground.Controllers
                 returnModel.ResultCount = result;
                 returnModel.baseViewModel.Message = "志愿者信息更新完成";
                 returnModel.baseViewModel.ResponseCode = 200;
-                _ILogger.Information("志愿者信息更新完成");
+                //_ILogger.Information("志愿者信息更新完成");
                 return Ok(returnModel);
             }
             else
@@ -72,7 +72,7 @@ namespace IntellVolunteerBackground.Controllers
                 returnModel.ResultCount = 0;
                 returnModel.baseViewModel.Message = "志愿者信息更新失败";
                 returnModel.baseViewModel.ResponseCode = 400;
-                _ILogger.Information("志愿者信息更新失败");
+                //_ILogger.Information("志愿者信息更新失败");
                 return BadRequest(returnModel);
             }
 

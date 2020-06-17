@@ -13,11 +13,11 @@ namespace IntellUser.Controllers
     public class RoleController : ControllerBase
     {
         private readonly IRoleService _roleService;
-        private readonly ILogger _ILogger;
-        public RoleController(IRoleService  roleService, ILogger logger)
+        //private readonly ILogger _ILogger;
+        public RoleController(IRoleService  roleService )
         {
             _roleService = roleService;
-            _ILogger = logger;
+            //_ILogger = logger;
 
         }
         /// <summary>
@@ -39,7 +39,7 @@ namespace IntellUser.Controllers
                 userRoleAddResModel.AddCount = User_Add_Count;
                 userRoleAddResModel.baseViewModel.Message = "添加成功";
                 userRoleAddResModel.baseViewModel.ResponseCode = 200;
-                _ILogger.Information("添加角色成功");
+                //_ILogger.Information("添加角色成功");
                 return Ok(userRoleAddResModel);
             }
             else
@@ -48,7 +48,7 @@ namespace IntellUser.Controllers
                 userRoleAddResModel.AddCount = 0;
                 userRoleAddResModel.baseViewModel.Message = "添加失败";
                 userRoleAddResModel.baseViewModel.ResponseCode = 400;
-                _ILogger.Information("添加角色失败");
+                //_ILogger.Information("添加角色失败");
                 return BadRequest(userRoleAddResModel);
             }
         }
@@ -70,7 +70,7 @@ namespace IntellUser.Controllers
                 userRoleSingleResModel.IsSuccess = IsSuccess;
                 userRoleSingleResModel.baseViewModel.Message = "角色可以添加";
                 userRoleSingleResModel.baseViewModel.ResponseCode = 200;
-                _ILogger.Information("添加角色标识唯一性验证,角色可以添加");
+                //_ILogger.Information("添加角色标识唯一性验证,角色可以添加");
                 return Ok(userRoleSingleResModel);
             }
             else
@@ -78,7 +78,7 @@ namespace IntellUser.Controllers
                 userRoleSingleResModel.IsSuccess = false;
                 userRoleSingleResModel.baseViewModel.Message = "角色id重复请修改";
                 userRoleSingleResModel.baseViewModel.ResponseCode = 400;
-                _ILogger.Information("添加角色标识唯一性验证,角色id重复请修改");
+                //_ILogger.Information("添加角色标识唯一性验证,角色id重复请修改");
                 return BadRequest(userRoleSingleResModel);
             }
         }
@@ -99,7 +99,7 @@ namespace IntellUser.Controllers
                 userRoleDeleteResModel.IsSuccess = true;
                 userRoleDeleteResModel.baseViewModel.Message = "删除成功";
                 userRoleDeleteResModel.baseViewModel.ResponseCode = 200;
-                _ILogger.Information("删除角色成功");
+                //_ILogger.Information("删除角色成功");
                 return Ok(userRoleDeleteResModel);
             }
             else
@@ -108,7 +108,7 @@ namespace IntellUser.Controllers
                 userRoleDeleteResModel.IsSuccess = false;
                 userRoleDeleteResModel.baseViewModel.Message = "删除失败";
                 userRoleDeleteResModel.baseViewModel.ResponseCode = 400;
-                _ILogger.Information("删除角色失败");
+                //_ILogger.Information("删除角色失败");
                 return BadRequest(userRoleDeleteResModel);
             }
         }
@@ -129,7 +129,7 @@ namespace IntellUser.Controllers
             userRoleSearchResModel.baseViewModel.Message = "查询成功";
             userRoleSearchResModel.baseViewModel.ResponseCode = 200;
             userRoleSearchResModel.TotalNum = TotalNum;
-            _ILogger.Information("角色查询成功");
+            //_ILogger.Information("角色查询成功");
             return Ok(userRoleSearchResModel);
 
         }
@@ -153,7 +153,7 @@ namespace IntellUser.Controllers
                 userUpdateResModel.AddCount = UpdateRowNum;
                 userUpdateResModel.baseViewModel.Message = "更新成功";
                 userUpdateResModel.baseViewModel.ResponseCode = 200;
-                _ILogger.Information("角色更新成功");
+                //_ILogger.Information("角色更新成功");
                 return Ok(userUpdateResModel);
             }
             else
@@ -162,7 +162,7 @@ namespace IntellUser.Controllers
                 userUpdateResModel.AddCount = 0;
                 userUpdateResModel.baseViewModel.Message = "更新失败";
                 userUpdateResModel.baseViewModel.ResponseCode = 400;
-                _ILogger.Information("角色更新失败");
+                //_ILogger.Information("角色更新失败");
                 return BadRequest(userUpdateResModel);
             }
         }
@@ -184,7 +184,7 @@ namespace IntellUser.Controllers
                 relateRoleToUserAddResModel.AddCount = UpdateRowNum;
                 relateRoleToUserAddResModel.baseViewModel.Message = "角色分配用户成功";
                 relateRoleToUserAddResModel.baseViewModel.ResponseCode = 200;
-                _ILogger.Information("给角色分配用户成功");
+                //_ILogger.Information("给角色分配用户成功");
                 return Ok(relateRoleToUserAddResModel);
             }
             else
@@ -193,7 +193,7 @@ namespace IntellUser.Controllers
                 relateRoleToUserAddResModel.AddCount = 0;
                 relateRoleToUserAddResModel.baseViewModel.Message = "角色分配用户失败";
                 relateRoleToUserAddResModel.baseViewModel.ResponseCode = 400;
-                _ILogger.Information("给角色分配用户失败");
+                //_ILogger.Information("给角色分配用户失败");
                 return BadRequest(relateRoleToUserAddResModel);
             }
         }
@@ -215,7 +215,7 @@ namespace IntellUser.Controllers
                 relateRoleToUserDelResModel.DelCount = DeleteRowNum;
                 relateRoleToUserDelResModel.baseViewModel.Message = "角色删除用户成功";
                 relateRoleToUserDelResModel.baseViewModel.ResponseCode = 200;
-                _ILogger.Information("根据角色删除人员成功");
+                //_ILogger.Information("根据角色删除人员成功");
                 return Ok(relateRoleToUserDelResModel);
             }
             else
@@ -224,7 +224,7 @@ namespace IntellUser.Controllers
                 relateRoleToUserDelResModel.DelCount = 0;
                 relateRoleToUserDelResModel.baseViewModel.Message = "角色删除用户失败";
                 relateRoleToUserDelResModel.baseViewModel.ResponseCode = 400;
-                _ILogger.Information("根据角色删除人员失败");
+                //_ILogger.Information("根据角色删除人员失败");
                 return BadRequest(relateRoleToUserDelResModel);
             }
         }
@@ -248,7 +248,7 @@ namespace IntellUser.Controllers
                 relateRoleToRightAddResModel.AddCount = AddRowNum;
                 relateRoleToRightAddResModel.baseViewModel.Message = "角色分配权限成功";
                 relateRoleToRightAddResModel.baseViewModel.ResponseCode = 200;
-                _ILogger.Information("给角色配置权限成功");
+                //_ILogger.Information("给角色配置权限成功");
                 return Ok(relateRoleToRightAddResModel);
             }
             else
@@ -257,7 +257,7 @@ namespace IntellUser.Controllers
                 relateRoleToRightAddResModel.AddCount = 0;
                 relateRoleToRightAddResModel.baseViewModel.Message = "角色分配权限失败";
                 relateRoleToRightAddResModel.baseViewModel.ResponseCode = 400;
-                _ILogger.Information("给角色配置权限失败");
+                //_ILogger.Information("给角色配置权限失败");
                 return BadRequest(relateRoleToRightAddResModel);
             }
         }
@@ -280,7 +280,7 @@ namespace IntellUser.Controllers
                 relateRoleToRightDelResModel.DelCount = DeleteRowNum;
                 relateRoleToRightDelResModel.baseViewModel.Message = "权限删除用户成功";
                 relateRoleToRightDelResModel.baseViewModel.ResponseCode = 200;
-                _ILogger.Information("给角色删除权限成功");
+                //_ILogger.Information("给角色删除权限成功");
                 return Ok(relateRoleToRightDelResModel);
             }
             else
@@ -289,7 +289,7 @@ namespace IntellUser.Controllers
                 relateRoleToRightDelResModel.DelCount = 0;
                 relateRoleToRightDelResModel.baseViewModel.Message = "权限删除用户失败";
                 relateRoleToRightDelResModel.baseViewModel.ResponseCode = 400;
-                _ILogger.Information("给角色删除权限失败");
+                //_ILogger.Information("给角色删除权限失败");
                 return BadRequest(relateRoleToRightDelResModel);
             }
         }
@@ -311,7 +311,7 @@ namespace IntellUser.Controllers
                 roleByUserSearchResModel.TotalNum = _roleService.Role_By_User_Get_ALLNum(roleByUserSearchViewModel);
                 roleByUserSearchResModel.baseViewModel.Message = "根据用户查询角色成功";
                 roleByUserSearchResModel.baseViewModel.ResponseCode = 200;
-               _ILogger.Information("根据用户查询角色成功");
+               //_ILogger.Information("根据用户查询角色成功");
             return Ok(roleByUserSearchResModel);
           
         }
@@ -333,7 +333,7 @@ namespace IntellUser.Controllers
                 roleByRightsSearchResModel.TotalNum = _roleService.Role_By_Rights_Get_ALLNum(roleByRightsSearchViewModel);
                 roleByRightsSearchResModel.baseViewModel.Message = "根据权限查询角色成功";
                 roleByRightsSearchResModel.baseViewModel.ResponseCode = 200;
-               _ILogger.Information("根据权限查询角色成功");
+               //_ILogger.Information("根据权限查询角色成功");
             return Ok(roleByRightsSearchResModel);
           
         }

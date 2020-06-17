@@ -28,13 +28,15 @@ namespace IntellVolunteerBackground.Controllers
         private readonly IIntellVolunteerBackgroundHttpClientService _weChatHttpClientService;
 
         private readonly IIntellVolunteerBackgroundILoginService _loginService;
-        private readonly ILogger _ILogger;
+        //private readonly ILogger _ILogger;
 
-        public LoginController(IIntellVolunteerBackgroundHttpClientService weChatHttpClientService, IOptions<VolunteerBackgroundTokenModel> iOptions, IIntellVolunteerBackgroundILoginService loginService, ILogger logger, IHttpClientFactory httpClientFactory)
+        public LoginController(IIntellVolunteerBackgroundHttpClientService weChatHttpClientService, 
+            IOptions<VolunteerBackgroundTokenModel> iOptions, 
+            IIntellVolunteerBackgroundILoginService loginService,   IHttpClientFactory httpClientFactory)
         {
             _IOptions = iOptions;
             _loginService = loginService;
-            _ILogger = logger;
+            //_ILogger = logger;
             _httpClientFactory = httpClientFactory;
             _weChatHttpClientService = weChatHttpClientService;
         }
@@ -51,7 +53,7 @@ namespace IntellVolunteerBackground.Controllers
                 model.IsSuccess = false;
                 model.baseViewModel.Message = "用户名不存在或者密码错误";
                 model.baseViewModel.ResponseCode = 400;
-                _ILogger.Information("用户名不存在或者密码错误，进入系统失败");
+                //_ILogger.Information("用户名不存在或者密码错误，进入系统失败");
                 return BadRequest(model);
             }
             else
@@ -66,7 +68,7 @@ namespace IntellVolunteerBackground.Controllers
                 model.baseViewModel.Message = "存在该用户，查询成功";
                 model.baseViewModel.ResponseCode = 200;
                 model.token = token;
-                _ILogger.Information("查询用户信息，存在该用户，权限查询成功");
+                //_ILogger.Information("查询用户信息，存在该用户，权限查询成功");
 
                 return Ok(model);
 
@@ -86,7 +88,7 @@ namespace IntellVolunteerBackground.Controllers
                 resultModel.IsSuccess = false;
                 resultModel.baseViewModel.Message = "用户无权限登录";
                 resultModel.baseViewModel.ResponseCode = 400;
-                _ILogger.Information("用户无权限，进入系统失败");
+                //_ILogger.Information("用户无权限，进入系统失败");
                 return BadRequest(resultModel);
             }
             else
@@ -95,7 +97,7 @@ namespace IntellVolunteerBackground.Controllers
                 resultModel.IsSuccess = true;
                 resultModel.baseViewModel.Message = "存在该用户，查询成功";
                 resultModel.baseViewModel.ResponseCode = 200;
-                _ILogger.Information("查询用户信息，存在该用户，权限查询成功");
+                //_ILogger.Information("查询用户信息，存在该用户，权限查询成功");
                 return Ok(resultModel);
             }
         }

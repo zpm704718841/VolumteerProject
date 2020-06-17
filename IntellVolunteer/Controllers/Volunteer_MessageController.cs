@@ -23,7 +23,7 @@ namespace IntellVolunteer.Controllers
     public class Volunteer_MessageController
     {
         private readonly IVolunteer_MessageService _MessageService;
-        private readonly ILogger _ILogger;
+        //private readonly ILogger _ILogger;
 
 
         public Volunteer_MessageController(IVolunteer_MessageService  messageService)

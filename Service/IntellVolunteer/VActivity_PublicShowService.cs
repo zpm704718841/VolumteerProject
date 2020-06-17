@@ -364,5 +364,34 @@ namespace Dto.Service.IntellVolunteer
 
             return result;
         }
+
+        //验证该志愿者是否 已经点赞该公益秀 20200608
+        public BaseViewModel CheckIsGiveLike(PublicShowIDandVID showIDandVID)
+        {
+            BaseViewModel result = new BaseViewModel();
+            try
+            {
+                VActivity_PublicShow_GiveLike itme = _GivelikeRepository.GetLike(showIDandVID.VID, showIDandVID.PublicShowID);
+                //不为空 则点赞过
+                if (!string.IsNullOrEmpty(itme.PublicShowID))
+                {
+                    result.ResponseCode = 0;
+                    result.Message = "已点赞";
+                }
+                else
+                {
+                    result.ResponseCode = 1;
+                    result.Message = "未点赞";
+                }
+            }
+            catch(Exception ex)
+            {
+                result.ResponseCode = 3;
+                result.Message = "出现异常";
+            }
+             
+            return result;
+
+        }
     }
 }

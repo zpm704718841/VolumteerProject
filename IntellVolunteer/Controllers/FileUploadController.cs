@@ -23,12 +23,12 @@ namespace IntellVolunteer.Controllers
     public class FileUploadController : ControllerBase
     {
         private readonly IFileUploadService _FileUploadService;
-        private readonly ILogger _ILogger;
+        //private readonly ILogger _ILogger;
 
-        public FileUploadController(IFileUploadService uploadService, ILogger logger)
+        public FileUploadController(IFileUploadService uploadService )
         {
             _FileUploadService = uploadService;
-            _ILogger = logger;
+            //_ILogger = logger;
         }
 
         /// <summary>

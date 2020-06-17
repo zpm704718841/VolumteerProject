@@ -165,7 +165,7 @@ namespace IntellVolunteer
               .Where(t => t.Name.EndsWith("Service"))
               .AsImplementedInterfaces();
 
-            builder.RegisterLogger(autowireProperties: true);
+            //builder.RegisterLogger(autowireProperties: true);
 
 
             //20191108  直接SQL实现
@@ -235,7 +235,7 @@ namespace IntellVolunteer
 
             //app.UseHttpsRedirection();
             app.UseMvc();
-            ContextSeed.SeedAsync(app, loggerFactory).Wait();
+            //ContextSeed.SeedAsync(app, loggerFactory).Wait();
         }
 
         public IConfiguration setConfig(IHostingEnvironment env, String config)

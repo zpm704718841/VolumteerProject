@@ -9,8 +9,8 @@ namespace Dtol
 {
     public class   DtolContext: DbContext
     {
-        [Obsolete]
-        public static readonly LoggerFactory LoggerFactory = new LoggerFactory(new[] { new DebugLoggerProvider((_, __) => true) });
+        //[Obsolete]
+        //public static readonly LoggerFactory LoggerFactory = new LoggerFactory(new[] { new DebugLoggerProvider((_, __) => true) });
         public DtolContext()
         {
         }

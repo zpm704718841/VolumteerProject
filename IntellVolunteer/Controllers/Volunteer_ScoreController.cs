@@ -22,7 +22,7 @@ namespace IntellVolunteer.Controllers
     public class Volunteer_ScoreController : ControllerBase
     {
         private readonly IVolunteer_ScoreService _ScoreService;
-        private readonly ILogger _ILogger;
+        //private readonly ILogger _ILogger;
 
 
         public Volunteer_ScoreController(IVolunteer_ScoreService  scoreService)

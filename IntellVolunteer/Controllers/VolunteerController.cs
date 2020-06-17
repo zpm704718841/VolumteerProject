@@ -24,7 +24,7 @@ namespace IntellVolunteer.Controllers
     {
         private readonly IVolunteerService _Volunteerervice;
         private readonly IVolunteer_MessageService _MessageService;
-        private readonly ILogger _ILogger;
+        //private readonly ILogger _ILogger;
 
 
 

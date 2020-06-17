@@ -17,12 +17,12 @@ namespace IntellVolunteerBackground.Controllers
     [ApiController]
     public class VolunteerActivityController : ControllerBase
     {
-        private readonly ILogger _ILogger;
+        //private readonly ILogger _ILogger;
         private readonly IVolunteerActivityService _volunteerActivityService;
         
-        public VolunteerActivityController(ILogger log, IVolunteerActivityService volunteerActivityService)
+        public VolunteerActivityController(  IVolunteerActivityService volunteerActivityService)
         {
-            _ILogger = log;
+           // _ILogger = log;
             _volunteerActivityService = volunteerActivityService;
         }
 
@@ -47,7 +47,7 @@ namespace IntellVolunteerBackground.Controllers
                     returnModel.ResultCount = result;
                     returnModel.baseViewModel.Message = "添加成功";
                     returnModel.baseViewModel.ResponseCode = 200;
-                    _ILogger.Information("活动信息添加成功");
+                    //_ILogger.Information("活动信息添加成功");
                     return Ok(returnModel);
                 }
                 else
@@ -56,7 +56,7 @@ namespace IntellVolunteerBackground.Controllers
                     returnModel.ResultCount = 0;
                     returnModel.baseViewModel.Message = "添加失败";
                     returnModel.baseViewModel.ResponseCode = 400;
-                    _ILogger.Information("活动信息添加失败");
+                    //_ILogger.Information("活动信息添加失败");
                     return BadRequest(returnModel);
                 }
             }
@@ -66,7 +66,7 @@ namespace IntellVolunteerBackground.Controllers
                 returnModel.ResultCount = 0;
                 returnModel.baseViewModel.Message = "添加失败,该活动已存在";
                 returnModel.baseViewModel.ResponseCode = 400;
-                _ILogger.Information("活动信息添加失败");
+                //_ILogger.Information("活动信息添加失败");
                 return BadRequest(returnModel);
             }
         }
@@ -88,7 +88,7 @@ namespace IntellVolunteerBackground.Controllers
                     returnModel.ResultCount = result;
                     returnModel.baseViewModel.Message = "更新成功";
                     returnModel.baseViewModel.ResponseCode = 200;
-                    _ILogger.Information("活动信息更新成功");
+                    //_ILogger.Information("活动信息更新成功");
                     return Ok(returnModel);
                 }
                 else
@@ -97,7 +97,7 @@ namespace IntellVolunteerBackground.Controllers
                     returnModel.ResultCount = 0;
                     returnModel.baseViewModel.Message = "活动信息更新失败";
                     returnModel.baseViewModel.ResponseCode = 400;
-                    _ILogger.Information("活动信息更新失败");
+                    //_ILogger.Information("活动信息更新失败");
                     return BadRequest(returnModel);
 
                 }
@@ -108,7 +108,7 @@ namespace IntellVolunteerBackground.Controllers
                 returnModel.ResultCount = 0;
                 returnModel.baseViewModel.Message = "活动信息修改失败,该活动已存在";
                 returnModel.baseViewModel.ResponseCode = 400;
-                _ILogger.Information("活动信息修改失败,该活动已存在");
+                //_ILogger.Information("活动信息修改失败,该活动已存在");
                 return BadRequest(returnModel);
 
             }
@@ -130,7 +130,7 @@ namespace IntellVolunteerBackground.Controllers
                 returnModel.ResultCount = result;
                 returnModel.baseViewModel.Message = "信息已删除";
                 returnModel.baseViewModel.ResponseCode = 200;
-                _ILogger.Information("活动信息已删除");
+                //_ILogger.Information("活动信息已删除");
                 return Ok(returnModel);
             }
             else
@@ -139,7 +139,7 @@ namespace IntellVolunteerBackground.Controllers
                 returnModel.ResultCount = 0;
                 returnModel.baseViewModel.Message = "活动信息删除失败";
                 returnModel.baseViewModel.ResponseCode = 400;
-                _ILogger.Information("活动信息删除失败");
+                //_ILogger.Information("活动信息删除失败");
                 return BadRequest(returnModel);
             }
 
@@ -160,7 +160,7 @@ namespace IntellVolunteerBackground.Controllers
             returnModel.Activity = midModel;
             returnModel.baseViewModel.Message = "查询成功";
             returnModel.baseViewModel.ResponseCode = 200;
-            _ILogger.Information("查询活动信息成功");
+            //_ILogger.Information("查询活动信息成功");
             return Ok(returnModel);
 
         }
@@ -173,7 +173,7 @@ namespace IntellVolunteerBackground.Controllers
             u_depart.UserDepart = u_departMidModel;
             u_depart.baseViewModel.Message = "查询成功";
             u_depart.baseViewModel.ResponseCode = 200;
-            _ILogger.Information("查询单位信息成功");
+            //_ILogger.Information("查询单位信息成功");
             return Ok(u_depart);
 
         }

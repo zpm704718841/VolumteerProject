@@ -19,12 +19,12 @@ namespace IntellWeChat.Controllers
     {
 
         private readonly ILoginService _loginService;
-        readonly ILogger _ILogger;
+        //readonly ILogger _ILogger;
 
-        public ValuesController(ILoginService loginService, ILogger logger)
+        public ValuesController(ILoginService loginService )
         {
             _loginService = loginService;
-            _ILogger = logger;
+            //_ILogger = logger;
         }
        
 
@@ -90,7 +90,7 @@ namespace IntellWeChat.Controllers
                 weChatLoginResModel.IsSuccess = false;
                 weChatLoginResModel.baseViewModel.Message = "用户名不存在或者密码错误";
                 weChatLoginResModel.baseViewModel.ResponseCode = 400;
-                _ILogger.Information("用户名不存在或者密码错误，进入系统失败");
+                //_ILogger.Information("用户名不存在或者密码错误，进入系统失败");
                 return BadRequest(weChatLoginResModel);
             }
             else
@@ -106,7 +106,7 @@ namespace IntellWeChat.Controllers
                 string  token = JwtHelper.IssueJwt(tokenModel);
               
 
-                _ILogger.Information("查询用户信息，存在该用户，权限查询成功");
+                //_ILogger.Information("查询用户信息，存在该用户，权限查询成功");
 
                 return Ok(weChatLoginResModel);
 
@@ -128,7 +128,7 @@ namespace IntellWeChat.Controllers
                 weChatInfoResModel.IsSuccess = false;
                 weChatInfoResModel.baseViewModel.Message = "用户无权限登录";
                 weChatInfoResModel.baseViewModel.ResponseCode = 400;
-                _ILogger.Information("用户无权限，进入系统失败");
+                //_ILogger.Information("用户无权限，进入系统失败");
                 return BadRequest(weChatInfoResModel);
             }
             else
@@ -138,7 +138,7 @@ namespace IntellWeChat.Controllers
                 weChatInfoResModel.IsSuccess = true;
                 weChatInfoResModel.baseViewModel.Message = "存在该用户，查询成功";
                 weChatInfoResModel.baseViewModel.ResponseCode = 200;
-                _ILogger.Information("查询用户信息，存在该用户，权限查询成功");
+                //_ILogger.Information("查询用户信息，存在该用户，权限查询成功");
                 return Ok(weChatInfoResModel);
             }
         }

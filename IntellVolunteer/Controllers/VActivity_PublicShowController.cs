@@ -17,11 +17,11 @@ namespace IntellVolunteer.Controllers
 {
     [Route("VolunteerManageApi/[controller]/[action]")]
     [ApiController]
-    public class VActivity_PublicShowController : ControllerBase 
+    public class VActivity_PublicShowController : ControllerBase
     {
         private readonly IVActivity_PublicShowService _IVActivity_PublicShowService;
 
-        public VActivity_PublicShowController(IVActivity_PublicShowService  showService)
+        public VActivity_PublicShowController(IVActivity_PublicShowService showService)
         {
             _IVActivity_PublicShowService = showService;
         }
@@ -36,7 +36,7 @@ namespace IntellVolunteer.Controllers
         public ActionResult<VolunteerActivitySearchResModel> GetMyAllActivity(SearchByVIDModel vidModel)
         {
             VolunteerActivitySearchResModel SearchResModel = new VolunteerActivitySearchResModel();
-             var SearchResult = _IVActivity_PublicShowService.GetMyAllActivity(vidModel.VID);
+            var SearchResult = _IVActivity_PublicShowService.GetMyAllActivity(vidModel.VID);
 
             SearchResModel.Volunteer_Activity = SearchResult;
             SearchResModel.isSuccess = true;
@@ -56,7 +56,7 @@ namespace IntellVolunteer.Controllers
         public ActionResult<VActivity_PublicShowAddResModel> AddPublicShow(VActivity_PublicShowAddModel middle)
         {
             VActivity_PublicShowAddResModel result = new VActivity_PublicShowAddResModel();
-             result = _IVActivity_PublicShowService.AddPublicShow(middle);
+            result = _IVActivity_PublicShowService.AddPublicShow(middle);
             return result;
         }
 
@@ -105,7 +105,7 @@ namespace IntellVolunteer.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult<BaseViewModel>  PublicShow_GiveLike(PublicShowIDandVID showDandVid)
+        public ActionResult<BaseViewModel> PublicShow_GiveLike(PublicShowIDandVID showDandVid)
         {
             BaseViewModel result = new BaseViewModel();
             result = _IVActivity_PublicShowService.PublicShow_GiveLike(showDandVid);
@@ -136,6 +136,21 @@ namespace IntellVolunteer.Controllers
             BaseViewModel result = new BaseViewModel();
             result = _IVActivity_PublicShowService.PublicShow_Delete(showDandVid);
             return result;
+        }
+
+
+
+        /// <summary>
+        /// (小程序端接口) 验证该志愿者是否 已经点赞该公益秀 20200608
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult<BaseViewModel> CheckIsGiveLike(PublicShowIDandVID showIDandVID)
+        {
+            BaseViewModel result = new BaseViewModel();
+            result = _IVActivity_PublicShowService.CheckIsGiveLike(showIDandVID);
+            return result;
+
         }
 
     }

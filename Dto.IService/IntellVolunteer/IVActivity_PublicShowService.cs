@@ -34,5 +34,8 @@ namespace Dto.IService.IntellVolunteer
 
         //志愿者删除该公益秀（自己发布的）   参数志愿者VID，公益秀ID
         BaseViewModel PublicShow_Delete(PublicShowIDandVID showDandVid);
+
+        //验证该志愿者是否 已经点赞该公益秀 20200608
+        BaseViewModel CheckIsGiveLike(PublicShowIDandVID showIDandVID);
     }
 }

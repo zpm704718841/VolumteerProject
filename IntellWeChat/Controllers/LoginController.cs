@@ -28,13 +28,16 @@ namespace IntellWeChat.Controllers
         private readonly IWeChatHttpClientService _weChatHttpClientService;
 
         private readonly ILoginService  _loginService;
-        private readonly ILogger _ILogger;
+        //private readonly ILogger _ILogger;
 
-        public LoginController(IWeChatHttpClientService weChatHttpClientService, IOptions<WeChartTokenMiddles> iOptions, ILoginService loginService, ILogger logger, IHttpClientFactory httpClientFactory)
+        public LoginController(IWeChatHttpClientService weChatHttpClientService,
+            IOptions<WeChartTokenMiddles> iOptions,
+            ILoginService loginService, 
+            IHttpClientFactory httpClientFactory)
         {
                _IOptions = iOptions;
                _loginService = loginService;
-               _ILogger = logger;
+               //_ILogger = logger;
                _httpClientFactory = httpClientFactory;
                _weChatHttpClientService = weChatHttpClientService;
         }
@@ -53,7 +56,7 @@ namespace IntellWeChat.Controllers
                 weChatInfoResModel.IsSuccess = false;
                 weChatInfoResModel.baseViewModel.Message = "用户无权限登录";
                 weChatInfoResModel.baseViewModel.ResponseCode = 400;
-                _ILogger.Information("用户无权限，进入系统失败");
+                //_ILogger.Information("用户无权限，进入系统失败");
                 return BadRequest(weChatInfoResModel);
             }
             else
@@ -62,7 +65,7 @@ namespace IntellWeChat.Controllers
                 weChatInfoResModel.IsSuccess = true;
                 weChatInfoResModel.baseViewModel.Message = "存在该用户，查询成功";
                 weChatInfoResModel.baseViewModel.ResponseCode = 200;
-                _ILogger.Information("查询用户信息，存在该用户，权限查询成功");
+                //_ILogger.Information("查询用户信息，存在该用户，权限查询成功");
                 return Ok(weChatInfoResModel);
             }
         }
@@ -83,7 +86,7 @@ namespace IntellWeChat.Controllers
                 weChatLoginResModel.IsSuccess = false;
                 weChatLoginResModel.baseViewModel.Message = "用户名不存在或者密码错误";
                 weChatLoginResModel.baseViewModel.ResponseCode = 400;
-                _ILogger.Information("用户名不存在或者密码错误，进入系统失败");
+                //_ILogger.Information("用户名不存在或者密码错误，进入系统失败");
                 return BadRequest(weChatLoginResModel);
             }
             else
@@ -92,7 +95,7 @@ namespace IntellWeChat.Controllers
                 weChatLoginResModel.IsSuccess = true;
                 weChatLoginResModel.baseViewModel.Message = "存在该用户，查询成功";
                 weChatLoginResModel.baseViewModel.ResponseCode = 200;
-                _ILogger.Information("查询用户信息，存在该用户，权限查询成功");
+                //_ILogger.Information("查询用户信息，存在该用户，权限查询成功");
               
              return Ok(weChatLoginResModel);
 
@@ -117,7 +120,7 @@ namespace IntellWeChat.Controllers
                 weChatLoginResModel.IsSuccess = false;
                 weChatLoginResModel.baseViewModel.Message = "用户名不存在或者密码错误";
                 weChatLoginResModel.baseViewModel.ResponseCode = 400;
-                _ILogger.Information("用户名不存在或者密码错误，进入系统失败");
+                //_ILogger.Information("用户名不存在或者密码错误，进入系统失败");
                 return BadRequest(weChatLoginResModel);
             }
             else
@@ -129,7 +132,7 @@ namespace IntellWeChat.Controllers
                 weChatLoginResModel.tokenViewModel.code ="200";
                 weChatLoginResModel.tokenViewModel.data  = "2728b712288da12fffd103af3bd616ff" ;
 
-                _ILogger.Information("查询用户信息，存在该用户，权限查询成功");
+                //_ILogger.Information("查询用户信息，存在该用户，权限查询成功");
 
 
                 return Ok(weChatLoginResModel);

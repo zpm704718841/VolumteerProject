@@ -26,18 +26,18 @@ namespace IntellVolunteer.Controllers
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILoginService _loginService;
-        private readonly ILogger _ILogger;
+        //private readonly ILogger _ILogger;
         private IOptions<WeChartTokenMiddles> _IOptions;
         private readonly IWeChatHttpClientService _weChatHttpClientService;
         //20200510
 
-        public LoginController(ILoginService  loginService, ILogger logger, IOptions<WeChartTokenMiddles> iOptions,
+        public LoginController(ILoginService  loginService,  IOptions<WeChartTokenMiddles> iOptions,
             IWeChatHttpClientService weChatHttpClientService, IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
             _IOptions = iOptions;
             _loginService = loginService;
-            _ILogger = logger;
+            //_ILogger = logger;
             _weChatHttpClientService = weChatHttpClientService;
         }
 

@@ -30,12 +30,12 @@ namespace Dto.Service.IntellVolunteer
         private readonly IUserLogin_LogRepository _userLogin_Log;
         private readonly ILoginType_LogRepository _loginType_Log;
         private readonly ILoginTypeRepository _loginTypeRepository;
-        private readonly ILogger _ILogger;
+        //private readonly ILogger _ILogger;
 
 
         public VolunteerService(IVolunteerInfoRepository iuserInfoRepository,  IMapper mapper, IVolunteer_Relate_TypeRepository Relate_TypeRepository,
             IVAttachmentRepository AttachmentRepository, IUserLogin_LogRepository userLogin_Log, ILoginType_LogRepository loginType_Log,
-            ILoginTypeRepository loginType, ILogger logger)
+            ILoginTypeRepository loginType )
         {
             _IVolunteerInfoRepository = iuserInfoRepository;
             _IVolunteer_Relate_TypeRepository = Relate_TypeRepository;
@@ -44,12 +44,19 @@ namespace Dto.Service.IntellVolunteer
             _userLogin_Log = userLogin_Log;
             _loginType_Log = loginType_Log;
             _loginTypeRepository = loginType;
-            _ILogger = logger;
+            //_ILogger = logger;
         }
 
         //添加用户
         public int User_Add(VolunteerAddViewModel VuserAddViewModel)
         {
+
+            //判断  （擅长技能、服务领域） 是否为空 20200602
+            if (VuserAddViewModel.RelateUserIDandTypeIDList.Count == 0)
+            {
+                return 0;
+            }
+ 
             DEncrypt encrypt = new DEncrypt();
             //再次获取  志愿者编号以免提交时出现重复编号
             var vno = GetNewVNO();
@@ -65,10 +72,10 @@ namespace Dto.Service.IntellVolunteer
             _IVolunteerInfoRepository.Add(user_Info);
             int a = _IVolunteerInfoRepository.SaveChanges();
 
+
             //保存完善信息（擅长技能、服务领域）
             List<Volunteer_Relate_TypeMiddle> Relate_Types = VuserAddViewModel.RelateUserIDandTypeIDList;
             var TypeInfo = _IMapper.Map<List<Volunteer_Relate_TypeMiddle>, List<Volunteer_Relate_Type>>(Relate_Types);
-          
             foreach (var itme in TypeInfo)
             {
                 _IVolunteer_Relate_TypeRepository.Add(itme);
@@ -140,7 +147,7 @@ namespace Dto.Service.IntellVolunteer
                 {
                     baseView.Message = "出现异常";
                     baseView.ResponseCode = 3;
-                    _ILogger.Information("记录用户登录时间出现异常" + ex.Message + ex.StackTrace + ex.Source);
+                    //_ILogger.Information("记录用户登录时间出现异常" + ex.Message + ex.StackTrace + ex.Source);
                 }
             }
             return baseView;
@@ -186,7 +193,7 @@ namespace Dto.Service.IntellVolunteer
                 {
                     baseView.Message = "出现异常";
                     baseView.ResponseCode = 3;
-                    _ILogger.Information("记录用户选择登录方式出现异常" + ex.Message + ex.StackTrace + ex.Source);
+                    //_ILogger.Information("记录用户选择登录方式出现异常" + ex.Message + ex.StackTrace + ex.Source);
                 }
             }
             return baseView;
