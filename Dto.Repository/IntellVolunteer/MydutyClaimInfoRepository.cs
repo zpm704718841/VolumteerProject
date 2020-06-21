@@ -119,5 +119,33 @@ namespace Dto.Repository.IntellVolunteer
             var result = DbSet.Where(predicate).OrderBy(a => a.CreateDate).ToList();
             return result;
         }
+
+
+        public List<MydutyClaim_Info> GetByUid(string uid)
+        {
+            var predicate = WhereExtension.True<MydutyClaim_Info>();//初始化where表达式
+            predicate = predicate.And(p => p.Userid.Equals(uid));
+
+            var result = DbSet.Where(predicate).OrderBy(a => a.CreateDate).ToList();
+            return result;
+        }
+
+
+        public MydutyClaim_Info GetByUidandID(string uid,string id)
+        {
+            var predicate = WhereExtension.True<MydutyClaim_Info>();//初始化where表达式
+            predicate = predicate.And(p => p.Userid.Equals(uid));
+            predicate = predicate.And(p => p.id.Equals(id));
+            var result = DbSet.Where(predicate).OrderBy(a => a.CreateDate).ToList();
+            if (result.Count > 0)
+            {
+                return result.First();
+            }
+            else
+            {
+                return null;
+            }
+            
+        }
     }
 }

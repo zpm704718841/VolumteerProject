@@ -13,5 +13,9 @@ namespace Dto.IRepository.IntellVolunteer
         MydutyClaim_Info GetInfoById(string id);
 
         List<MydutyClaim_Info> GetByOndutyClaims_InfoID(string id);
+
+        List<MydutyClaim_Info> GetByUid(string uid);
+        MydutyClaim_Info GetByUidandID(string uid, string id);
+
     }
 }

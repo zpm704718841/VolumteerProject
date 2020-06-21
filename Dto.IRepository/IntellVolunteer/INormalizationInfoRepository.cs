@@ -12,6 +12,6 @@ namespace Dto.IRepository.IntellVolunteer
         List<Normalization_Info> NormalizationSearch(NormalSearchViewModel normalSearchViewModel);
         Normalization_Info NormalizationContainDuty(NormalizationContainSearchViewModel normalizationContainSearchViewModel);
 
-
+        Normalization_Info NormalizationByID(string id);
     }
 }

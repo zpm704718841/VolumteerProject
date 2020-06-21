@@ -126,7 +126,7 @@ namespace Dto.Service.IntellVolunteer
         {
             List<MydutyClaimInfoSearchMiddleModel> middleModels = new List<MydutyClaimInfoSearchMiddleModel>();
             var list = _IMydutyClaimInfoRepository.GetByOndutyClaims_InfoID(code.code);
-
+            list = list.Where(o => o.status == "1").ToList();
             middleModels = _IMapper.Map<List<MydutyClaim_Info>, List<MydutyClaimInfoSearchMiddleModel>>(list);
 
             return middleModels;

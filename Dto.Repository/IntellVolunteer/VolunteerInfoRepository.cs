@@ -232,6 +232,22 @@ namespace Dto.Repository.IntellVolunteer
             return result;
         }
 
+        public  User_Depart  GetDepartByCode(string code)
+        {
+            var res = Db.user_Depart.ToList();
+
+            var result = res.Where(o => o.Code.Equals(code)).ToList();
+            if (result.Count > 0)
+            {
+                return result.First();
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+
         //保存修改信息
         public void EditInfo(Volunteer_Info delmodel)
         {

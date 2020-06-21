@@ -11,7 +11,7 @@ using ViewModel.VolunteerModel.RequsetModel;
 using ViewModel.VolunteerModel.ResponseModel;
 using System.IO;
 using ViewModel.PublicViewModel;
-
+using ViewModel.VolunteerModel.ResponseModel.NormalViewModel;
 
 namespace IntellVolunteer.Controllers
 {
@@ -63,6 +63,27 @@ namespace IntellVolunteer.Controllers
     
         }
 
+
+
+        /// <summary>
+        /// (小程序端接口) 获取当前用户 根据时间显示具体常态化管控认领 列表 
+        /// </summary>
+        /// <param name="vidModel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult<MyDutyListResModel> GetMyDutyAllByDate(VolunteerActivitySearchByDateModel vidModel)
+        {
+            MyDutyListResModel SearchResModel = new MyDutyListResModel();
+            var SearchResult = _homeService.GetMyDutyAllByDate(vidModel);
+
+            SearchResModel.mydutyClaims = SearchResult;
+            SearchResModel.isSuccess = true;
+            SearchResModel.baseViewModel.Message = "查询成功";
+            SearchResModel.baseViewModel.ResponseCode = 200;
+            SearchResModel.TotalNum = 1;
+            return Ok(SearchResModel);
+
+        }
 
     }
 }

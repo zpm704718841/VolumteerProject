@@ -15,5 +15,7 @@ namespace ViewModel.VolunteerModel.MiddleModel.OndutyClaimsMiddleModel
         public string status { get; set; }
         public DateTime? CreateDate { get; set; } = DateTime.Now;
         public string OndutyClaims_InfoId { get; set; }
+        public string Community { get; set; }//20200621  新增社区 字段
+        public string Subdistrict { get; set; }//20200621  新增社区 字段
     }
 }

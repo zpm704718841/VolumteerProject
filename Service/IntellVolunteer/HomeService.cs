@@ -20,6 +20,8 @@ using System.Web;
 using System.Net;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using ViewModel.VolunteerModel.MiddleModel.OndutyClaimsMiddleModel;
+using ViewModel.VolunteerModel.RequsetModel.NormalViewModel;
 
 namespace Dto.Service.IntellVolunteer
 {
@@ -38,8 +40,18 @@ namespace Dto.Service.IntellVolunteer
         private readonly IAISQLRepository _IAISQLRepository;
         private readonly IVolunteer_ScoreRepository _IVolunteer_ScoreRepository;
         private readonly IVolunteer_MessageRepository _IVolunteer_MessageRepository;
+        private readonly IMydutyClaimInfoRepository _mydutyClaimInfo;
+        private readonly IMydutyClaim_SignRepository _mydutyClaim_Sign;
+        private readonly INormalizationInfoRepository _normalizationInfo;
+        private readonly IOndutyClaimsInfoRepository _ondutyClaimsInfoRepository;
 
-        public HomeService(IVolunteerActivityRepository iInfoRepository, IMapper mapper, IVActivity_Relate_TypeRepository relate_TypeRepository, IVolunteerInfoRepository infoRepository, IVA_SignRepository va_SignRepository, IVolunteer_Relate_TypeRepository volunteer_Relate_TypeRepository, IBaseTypeRepository baseTypeRepository, IVA_HandleRepository va_HandleRepository, IVAttachmentRepository AttachmentRepository, ISQLRepository sqlRepository, IVolunteer_ScoreRepository scoreRepository, IAISQLRepository aisqlRepository, IVolunteer_MessageRepository messageRepository)
+
+        public HomeService(IVolunteerActivityRepository iInfoRepository, IMapper mapper, IVActivity_Relate_TypeRepository relate_TypeRepository, 
+            IVolunteerInfoRepository infoRepository, IVA_SignRepository va_SignRepository, IVolunteer_Relate_TypeRepository volunteer_Relate_TypeRepository, 
+            IBaseTypeRepository baseTypeRepository, IVA_HandleRepository va_HandleRepository, IVAttachmentRepository AttachmentRepository, 
+            ISQLRepository sqlRepository, IVolunteer_ScoreRepository scoreRepository, IAISQLRepository aisqlRepository, IVolunteer_MessageRepository messageRepository,
+            IMydutyClaimInfoRepository mydutyClaimInfo, IMydutyClaim_SignRepository mydutyClaim_Sign, INormalizationInfoRepository  normalizationInfo,
+            IOndutyClaimsInfoRepository claimsInfoRepository)
         {
             _IVolunteerActivityRepository = iInfoRepository;
             _IVActivity_Relate_TypeRepository = relate_TypeRepository;
@@ -54,7 +66,10 @@ namespace Dto.Service.IntellVolunteer
             _IAISQLRepository = aisqlRepository;
             _IVolunteer_ScoreRepository = scoreRepository;
             _IVolunteer_MessageRepository = messageRepository;
-
+            _mydutyClaimInfo = mydutyClaimInfo;
+            _mydutyClaim_Sign = mydutyClaim_Sign;
+            _normalizationInfo = normalizationInfo;
+            _ondutyClaimsInfoRepository = claimsInfoRepository;
         }
 
         //获取当前用户 今天以后的报名活动情况 日期列表
@@ -62,6 +77,7 @@ namespace Dto.Service.IntellVolunteer
         {
             List<string> list = new List<string>();
 
+            //获取我的报名活动情况
             List<string> Infos = _IVA_SignRepository.GetMyList(vidModel.VID);
             List<VolunteerActivitySearchMiddle> Searches = new List<VolunteerActivitySearchMiddle>();
 
@@ -69,9 +85,7 @@ namespace Dto.Service.IntellVolunteer
             Searches = _IMapper.Map<List<VolunteerActivity>, List<VolunteerActivitySearchMiddle>>(middle);
 
             ////获取当前用户 今天以后的报名活动情况 日期列表
-            Searches = Searches.Where(o => o.Stime >= DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"))).OrderBy(o => o.Stime).ToList();
-
-
+            Searches = Searches.Where(o => o.Stime >=DateTime.Now).OrderBy(o => o.Stime).ToList();
             foreach (var item in Searches)
             {
                 string date = DateTime.Parse(item.Stime.ToString()).ToString("yyyy-MM-dd");
@@ -81,6 +95,18 @@ namespace Dto.Service.IntellVolunteer
                 }
             }
 
+            //获取我的 常态化管控认领 情况 20200617
+            List<MydutyClaim_Info> myduties = _mydutyClaimInfo.GetByUid(vidModel.VID);
+            myduties = myduties.Where(o => o.EndDutyTime > DateTime.Now && o.status == "1").OrderBy(o => o.StartDutyTime).ToList();
+
+            foreach (var item in myduties)
+            {
+                string date = DateTime.Parse(item.StartDutyTime.ToString()).ToString("yyyy-MM-dd");
+                if (!list.Contains(date))
+                {
+                    list.Add(date);
+                }
+            }
             return list;
 
         }
@@ -119,7 +145,7 @@ namespace Dto.Service.IntellVolunteer
                     {
                         item.bak3 = "已完结";
                         //已经完结的 事项不再显示，只显示待办信息 20200609
-                        Searches.Remove(item);
+                        //Searches.Remove(item);
                     }
                 }
                 else
@@ -130,6 +156,76 @@ namespace Dto.Service.IntellVolunteer
             }
 
             return Searches;
+        }
+
+
+
+        ///获取当前用户 根据时间显示具体常态化管控认领 列表 20200617
+        public List<MydutyClaimInfoMiddleModel> GetMyDutyAllByDate(VolunteerActivitySearchByDateModel vidModel)
+        {
+            List<MydutyClaimInfoMiddleModel> models = new List<MydutyClaimInfoMiddleModel>();
+
+            //获取我的 常态化管控认领 情况 20200617
+            List<MydutyClaim_Info> myduties = _mydutyClaimInfo.GetByUid(vidModel.VID);
+           
+
+            if (!String.IsNullOrEmpty(vidModel.Date))
+            {
+                myduties = myduties.Where(o => DateTime.Parse(o.StartDutyTime.ToString()).ToString("yyyy-MM-dd") == vidModel.Date 
+                &&  o.EndDutyTime > DateTime.Now
+                 && o.status == "1").OrderBy(o => o.StartDutyTime).ToList();
+            }
+            SearchByIDAnduidModel searchByID = new SearchByIDAnduidModel();
+            searchByID.uid = vidModel.VID;
+        
+            foreach (var item in myduties)
+            {
+                MydutyClaimInfoMiddleModel mydutyClaimInfo = new MydutyClaimInfoMiddleModel();
+               
+                searchByID.MydutyClaim_InfoID = item.id;
+                MydutyClaim_Sign ii = _mydutyClaim_Sign.GetByParasOne(searchByID);
+
+                if (ii != null && ii.id != null)
+                {
+                    if (ii.type == "in")
+                    {
+                        item.status = "上传现场图片";
+                    }
+                    if (ii.type == "img")
+                    {
+                        item.status = "待签退";
+                    }
+                    if (ii.type == "out")
+                    {
+                        item.status = "已完结";
+                        //已经完结的 事项不再显示，只显示待办信息 20200621
+                        //myduties.Remove(item);
+                    }
+                }
+                else
+                {
+                    item.status = "待签到";
+                }
+
+                mydutyClaimInfo = _IMapper.Map<MydutyClaim_Info, MydutyClaimInfoMiddleModel>(item);
+                
+                var dutyInfo = _ondutyClaimsInfoRepository.GetByID(item.OndutyClaims_InfoId);
+                if(dutyInfo!=null)
+                {
+                    //获取 社区、小区
+                    mydutyClaimInfo.Subdistrict = dutyInfo.Subdistrict;
+                    var normalInfo = _normalizationInfo.NormalizationByID(dutyInfo.Normalization_InfoId);
+                    if(normalInfo!=null)
+                    {
+                        mydutyClaimInfo.Community = normalInfo.CommunityName;
+                    }
+                   
+                }
+                models.Add(mydutyClaimInfo);
+            }
+
+         
+            return models;
         }
 
 

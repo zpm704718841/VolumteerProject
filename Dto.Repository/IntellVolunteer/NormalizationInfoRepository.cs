@@ -95,7 +95,13 @@ namespace Dto.Repository.IntellVolunteer
             return tempresult;
         }
 
-
+        public Normalization_Info NormalizationByID(string id)
+        {
+            //小区等主要信息，以及值班需要上报的信息
+            var tempresult = DbSet.Where(a => a.id == id).FirstOrDefault();
+           
+            return tempresult;
+        }
 
         public void Remove(Guid id)
         {

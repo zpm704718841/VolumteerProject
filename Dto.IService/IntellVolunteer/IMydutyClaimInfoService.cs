@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ViewModel.PublicViewModel;
 using ViewModel.VolunteerModel.MiddleModel.OndutyClaimsMiddleModel;
+using ViewModel.VolunteerModel.RequsetModel;
 using ViewModel.VolunteerModel.RequsetModel.NormalViewModel;
 using ViewModel.VolunteerModel.ResponseModel.NormalViewModel;
 
@@ -10,9 +12,12 @@ namespace Dto.IService.IntellVolunteer
     public  interface IMydutyClaimInfoService
     {
         List<MydutyClaimInfoSearchMiddleModel> getMydutyInfoService(MydutyClaimInfoSearchViewModel  mydutyClaimInfoSearchViewModel);
-        void getMydutyInfoUpdateService(MydutyClaimInfoUpdateViewModel mydutyClaimInfoUpdateViewModel);
-        void getMydutyInfoAddService(MydutyClaimInfoAddViewModel mydutyClaimInfoAddViewModel);
+        BaseViewModel getMydutyInfoUpdateService(MydutyClaimInfoUpdateViewModel mydutyClaimInfoUpdateViewModel);
+        BaseViewModel getMydutyInfoAddService(MydutyClaimInfoAddViewModel mydutyClaimInfoAddViewModel);
 
+
+        //值班认领 签到、签退
+        int HandleAdd(VA_HandleAddViewModel AddViewModel);
 
         // 值班认领 上传现场服务照片
         int SubmitImg(MyDutySignImgAddModel AddViewModel);

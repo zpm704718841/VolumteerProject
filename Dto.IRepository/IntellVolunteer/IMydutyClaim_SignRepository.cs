@@ -13,5 +13,8 @@ namespace Dto.IRepository.IntellVolunteer
     {
         //根据条件查询
         List<MydutyClaim_Sign> GetByParas(SearchByIDAnduidModel model);
+
+
+        MydutyClaim_Sign GetByParasOne(SearchByIDAnduidModel model);
     }
 }

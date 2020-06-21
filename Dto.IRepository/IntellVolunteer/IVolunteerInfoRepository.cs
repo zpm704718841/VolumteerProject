@@ -16,6 +16,7 @@ namespace Dto.IRepository.IntellVolunteer
         IQueryable<Volunteer_Info> GetInfoByVON(string VON);
 
         List<User_Depart> GetDepartAll();
+        User_Depart GetDepartByCode(string code);
         // 根据条件查角色
         List<Volunteer_Info> SearchInfoByWhere(VolunteerSearchViewModel VSearchViewModel);
         //查询用户数量

@@ -20,5 +20,6 @@ namespace Dto.IService.IntellVolunteer
 
         // (小程序端接口)  获取 该值班信息的认领人信息
         List<MydutyClaimInfoSearchMiddleModel> GetDutyListByID(CodeViewModel code);
+
     }
 }

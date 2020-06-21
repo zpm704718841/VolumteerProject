@@ -12,7 +12,13 @@ namespace Dtol.dtol
         public string Code { get; set; }
         public string Remark { get; set; }
         public int? Sort { get; set; }
-       // public List<User_Info> User_Info { get; set; }
 
+        public string longitude { get; set; }
+        public string latitude { get; set; }
+        public string bak1 { get; set; }
+        public string bak2 { get; set; }
+        public string bak3 { get; set; }
+        public string bak4 { get; set; }
+        public string bak5 { get; set; }
     }
 }

@@ -10,6 +10,7 @@ using ViewModel.PublicViewModel;
 using ViewModel.VolunteerBackground.ResponseModel;
 using ViewModel.VolunteerModel.RequsetModel;
 using ViewModel.VolunteerModel.RequsetModel.NormalViewModel;
+using ViewModel.VolunteerModel.ResponseModel;
 using ViewModel.VolunteerModel.ResponseModel.NormalViewModel;
 
 namespace IntellVolunteer.Controllers
@@ -36,6 +37,8 @@ namespace IntellVolunteer.Controllers
             normalizationInfoService.AddNormalizationInfoService(normalAddViewModel);
             return null;
         }
+
+
         [HttpPost]
         /// <summary>
         ///  查询常态化信息
@@ -95,12 +98,12 @@ namespace IntellVolunteer.Controllers
         /// <param name="mydutyClaimInfoUpdateViewModel"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult GetUpdateMyDutyInfo(MydutyClaimInfoUpdateViewModel mydutyClaimInfoUpdateViewModel)
+        public ActionResult<BaseViewModel> GetUpdateMyDutyInfo(MydutyClaimInfoUpdateViewModel mydutyClaimInfoUpdateViewModel)
         {
+            BaseViewModel baseView = new BaseViewModel();
+            baseView = mydutyClaimInfoService.getMydutyInfoUpdateService(mydutyClaimInfoUpdateViewModel);
 
-            mydutyClaimInfoService.getMydutyInfoUpdateService(mydutyClaimInfoUpdateViewModel);
-
-            return Ok("更新成功");
+            return baseView;
         }
 
         /// <summary>
@@ -109,12 +112,12 @@ namespace IntellVolunteer.Controllers
         /// <param name="mydutyClaimInfoAddViewModel"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult GetAddMyDutyInfo(MydutyClaimInfoAddViewModel  mydutyClaimInfoAddViewModel)
+        public ActionResult<BaseViewModel> GetAddMyDutyInfo(MydutyClaimInfoAddViewModel  mydutyClaimInfoAddViewModel)
         {
+            BaseViewModel baseView = new BaseViewModel();
+            baseView = mydutyClaimInfoService.getMydutyInfoAddService(mydutyClaimInfoAddViewModel);
 
-            mydutyClaimInfoService.getMydutyInfoAddService(mydutyClaimInfoAddViewModel);
-
-            return Ok("添加成功");
+            return baseView;
         }
 
         /// <summary>
@@ -155,6 +158,66 @@ namespace IntellVolunteer.Controllers
         }
 
 
+
+        /// <summary>
+        /// (小程序端接口)  值班认领现场签到签退
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult<VA_HandleAddResModel> MyDutySign(VA_HandleAddViewModel AddViewModel)
+        {
+            int Add_Count = 0;
+            VA_HandleAddResModel AddResModel = new VA_HandleAddResModel();
+            Add_Count = mydutyClaimInfoService.HandleAdd(AddViewModel);
+
+            if (Add_Count == 1)
+            {
+                AddResModel.IsSuccess = true;
+                AddResModel.AddCount = Add_Count;
+                AddResModel.baseViewModel.Message = "签到成功";
+                AddResModel.baseViewModel.ResponseCode = 200;
+            }
+            else if (Add_Count == 6)
+            {
+                AddResModel.IsSuccess = false;
+                AddResModel.AddCount = 0;
+                AddResModel.baseViewModel.Message = "您还未进行注册请先注册";
+                AddResModel.baseViewModel.ResponseCode = 700;
+            }
+            else if (Add_Count == 7)
+            {
+                AddResModel.IsSuccess = false;
+                AddResModel.AddCount = 0;
+                AddResModel.baseViewModel.Message = "签到地址有误签到失败";
+                AddResModel.baseViewModel.ResponseCode = 600;
+            }
+            else if (Add_Count == 8)
+            {
+                AddResModel.IsSuccess = false;
+                AddResModel.AddCount = 0;
+                AddResModel.baseViewModel.Message = "活动地址有误签到失败";
+                AddResModel.baseViewModel.ResponseCode = 500;
+            }
+            else if (Add_Count == 9)
+            {
+                AddResModel.IsSuccess = false;
+                AddResModel.AddCount = 0;
+                AddResModel.baseViewModel.Message = "签到地址不在活动范围500米内";
+                AddResModel.baseViewModel.ResponseCode = 400;
+            }
+            else
+            {
+                AddResModel.IsSuccess = false;
+                AddResModel.AddCount = 0;
+                AddResModel.baseViewModel.Message = "签到失败";
+                AddResModel.baseViewModel.ResponseCode = 300;
+            }
+            return Ok(AddResModel);
+        }
+
+
+
+
         /// <summary>
         /// (小程序端接口)  值班认领 上传现场服务照片  （认领值班ID、uid、 现场图片信息列表）
         /// </summary>
@@ -188,6 +251,7 @@ namespace IntellVolunteer.Controllers
             
             return Ok(AddResModel);
         }
+
 
 
 

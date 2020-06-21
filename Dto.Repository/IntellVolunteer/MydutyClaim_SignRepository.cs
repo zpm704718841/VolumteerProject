@@ -79,5 +79,29 @@ namespace Dto.Repository.IntellVolunteer
             return result;
         }
 
+        public MydutyClaim_Sign GetByParasOne(SearchByIDAnduidModel model)
+        {
+            //查询条件
+            var predicate = WhereExtension.True<MydutyClaim_Sign>();//初始化where表达式
+
+            if (!String.IsNullOrEmpty(model.uid))
+            {
+                predicate = predicate.And(p => p.Userid.Equals(model.uid));
+            }
+            if (!String.IsNullOrEmpty(model.MydutyClaim_InfoID))
+            {
+                predicate = predicate.And(p => p.MydutyClaim_InfoID.Equals(model.MydutyClaim_InfoID));
+            }
+            var result = DbSet.Where(predicate).OrderByDescending(o => o.CreateDate).ToList();
+            if(result.Count>0)
+            {
+                return result.First();
+            }
+            else
+            {
+                return null;
+            }
+        }
+
     }
 }

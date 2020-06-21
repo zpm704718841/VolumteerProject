@@ -12,6 +12,8 @@ namespace ViewModel.VolunteerBackground.MiddleModel
         public string Code { get; set; }
         public string Remark { get; set; }
         public int? Sort { get; set; }
+        public string longitude { get; set; }
+        public string latitude { get; set; }
 
         public List<UserDepartSearchMidModel> DepartChildren { get; set; }
     }
