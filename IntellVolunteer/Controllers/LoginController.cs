@@ -69,6 +69,31 @@ namespace IntellVolunteer.Controllers
 
 
         /// <summary>
+        ///  (小程序端接口) 20200629 用户授权 通过解密获取unionid  再查询是否是泰便利注册用户
+        /// </summary>
+        [HttpPost]
+        public ActionResult<UserInfoResModel> GetWeChartUserInfoByDE(WeChatCodeDEModel codeModel)
+        {
+            UserInfoResModel resModel = _weChatHttpClientService.GetWeChartUserInfoByDE(codeModel);
+            return resModel;
+        }
+
+
+
+
+        /// <summary>
+        ///  (小程序端接口) 20200629 用户初次进入自愿者小程序  判断是否能获取unionid，如果有unionid验证用户是否是泰便利注册用户，如果是返回泰便利用户中心信息，如果不是返回空 
+        /// </summary>
+        [HttpPost]
+        public ActionResult<UserInfoResModel> GetWeChartEasyUserInfoNew(WeChatCodeModel codeModel)
+        {
+            UserInfoResModel resModel = _weChatHttpClientService.GetEasyUserInfoByCode(codeModel.code);
+            return resModel;
+        }
+
+
+
+        /// <summary>
         /// (小程序端接口)  获取该用户登录方式（参数：uid）
         /// </summary>
         /// <param name="uidViewModel"></param>

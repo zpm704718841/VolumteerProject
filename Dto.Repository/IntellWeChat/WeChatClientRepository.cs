@@ -23,6 +23,10 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using ViewModel.VolunteerModel.RequsetModel;
+using ViewModel.VolunteerModel.ResponseModel;
+using ViewModel.PublicViewModel;
+using Dto.IRepository.IntellVolunteer;
 
 namespace Dto.Repository.IntellWeChat
 {
@@ -31,6 +35,7 @@ namespace Dto.Repository.IntellWeChat
         //志愿者数据库
         protected readonly DtolContext Db;
         protected readonly DbSet<V_GetToken> DbSet;
+   
 
         //微官网数据库 20191030
         protected readonly WGWDtolContext WGWDb;
@@ -41,17 +46,20 @@ namespace Dto.Repository.IntellWeChat
         protected readonly EasyDtolContext EasyDb;
         protected readonly DbSet<Dtol.Easydtol.UserInfo> EasyDbSet;
 
+        protected readonly IV_OpenidUnionidRepository v_OpenidUnionidRepository;
 
-        public WeChatClientRepository(DtolContext context, WGWDtolContext WGWcontext, EasyDtolContext easyDtol)
+        public WeChatClientRepository(DtolContext context, WGWDtolContext WGWcontext, EasyDtolContext easyDtol, IV_OpenidUnionidRepository v_OpenidUnionid)
         {
             Db = context;
             DbSet = Db.Set<V_GetToken>();
+            
 
             WGWDb = WGWcontext;
             WGWDbSet= WGWDb.Set<Dtol.WGWdtol.UserInfo>();
 
             EasyDb = easyDtol;
             EasyDbSet = EasyDb.Set<Dtol.Easydtol.UserInfo>();
+            v_OpenidUnionidRepository = v_OpenidUnionid;
         }
 
         public IQueryable<V_GetToken> GetAll()
@@ -198,15 +206,165 @@ namespace Dto.Repository.IntellWeChat
             Dtol.Easydtol.UserInfo userInfo = new Dtol.Easydtol.UserInfo();
 
             if (code == null || code == "")
-                return null;
+                return userInfo;
 
             if (String.IsNullOrEmpty(code))
-                return null;
+                return userInfo;
             WeChatInfoModel oiask = JsonConvert.DeserializeObject<WeChatInfoModel>(GetOpenIdAndSessionKeyString(code, appId, appSecret));
-
-            userInfo = GetEasyUser(oiask.unionid);
+            if (!String.IsNullOrEmpty(oiask.unionid))
+            {
+                userInfo = GetEasyUser(oiask.unionid);
+            }
+ 
             return userInfo;
         }
+
+
+        /// <summary>  
+        /// 20200629 用户授权 通过解密获取unionid  再查询是否是泰便利注册用户 
+        /// </summary>  
+ 
+        public UserInfoResModel EasyDecryptByDE(WeChatCodeDEModel codeModel, string appId, string appSecret)
+        {
+            UserInfoResModel resModel = new UserInfoResModel();
+            BaseViewModel model = new BaseViewModel();
+            Dtol.Easydtol.UserInfo user = new Dtol.Easydtol.UserInfo();
+
+            if (codeModel.code == null || codeModel.code == "")
+            {
+                model.ResponseCode = 9;
+                model.Message = "参数为空";
+            }
+ 
+            WeChatInfoModel oiask = JsonConvert.DeserializeObject<WeChatInfoModel>(GetOpenIdAndSessionKeyString(codeModel.code, appId, appSecret));
+
+            if (!string.IsNullOrEmpty(oiask.session_key))
+            {
+                WechatUserInfoResModel res = new WechatUserInfoResModel();
+
+                res = Decrypt(codeModel.encryptedData, codeModel.iv, oiask.session_key);
+                if (!string.IsNullOrEmpty(res.unionId))
+                {
+                    V_OpenidUnionid v_Openid = new V_OpenidUnionid();
+                    v_Openid.openid = oiask.openid;
+                    v_Openid.unionid = res.unionId;
+                    v_OpenidUnionidRepository.Add(v_Openid);
+                    v_OpenidUnionidRepository.SaveChanges();
+
+                    user = GetEasyUser(res.unionId);
+
+                    if (!String.IsNullOrEmpty(user.ID))
+                    {
+                        model.ResponseCode = 5;
+                        model.Message = "unionid不为空，已注册泰便利";
+                    }
+                    else
+                    {
+                        model.ResponseCode = 6;
+                        model.Message = "unionid不为空，未注册泰便利";
+                    }
+                }
+                else
+                {
+                    model.ResponseCode = 7;
+                    model.Message = "授权未获取unionid";
+                }
+            }
+            else
+            {
+                model.ResponseCode = 8;
+                model.Message = "授权未获取session_key";
+
+            }
+            resModel.baseView = model;
+            resModel.userInfo = user;
+            
+            return resModel;
+        }
+
+
+
+        /// <summary>
+        /// 20200629  用户初次进入自愿者小程序验证用户是否是泰便利已注册用户，如果是返回泰便利用户中心信息，如果不是返回空  20200510
+        /// </summary>
+        public UserInfoResModel EasyDecryptByCode(string code, string appId, string appSecret)
+        {
+            UserInfoResModel resModel = new UserInfoResModel();
+            BaseViewModel model = new BaseViewModel();
+            Dtol.Easydtol.UserInfo  user = new Dtol.Easydtol.UserInfo();
+
+            if (code == null || code == "")
+            {
+                model.ResponseCode = 9;
+                model.Message = "参数为空";
+
+                resModel.baseView = model;
+                resModel.userInfo = user;
+                return resModel;
+            }
+       
+            WeChatInfoModel oiask = JsonConvert.DeserializeObject<WeChatInfoModel>(GetOpenIdAndSessionKeyString(code, appId, appSecret));
+            if (!String.IsNullOrEmpty(oiask.unionid))
+            {
+                user = GetEasyUser(oiask.unionid);
+               
+                if(!String.IsNullOrEmpty(user.ID))
+                {
+                    model.ResponseCode = 7;
+                    model.Message = "unionid不为空，已注册泰便利";
+                }
+                else
+                {
+                    model.ResponseCode = 6;
+                    model.Message = "unionid不为空，未注册泰便利";
+                }
+                resModel.baseView = model;
+                resModel.userInfo = user;
+            }
+            else
+            {
+                if (!String.IsNullOrEmpty(oiask.openid))
+                {
+                    var mm = v_OpenidUnionidRepository.GetByParasOne(oiask.openid);
+                    if (mm != null)
+                    {
+                        user = GetEasyUser(mm.unionid);
+                        if (!String.IsNullOrEmpty(user.ID))
+                        {
+                            model.ResponseCode = 7;
+                            model.Message = "unionid不为空，已注册泰便利";
+                        }
+                        else
+                        {
+                            model.ResponseCode = 6;
+                            model.Message = "unionid不为空，未注册泰便利";
+                        }
+                        resModel.baseView = model;
+                        resModel.userInfo = user;
+                    }
+                    else
+                    {
+                        model.ResponseCode = 8;
+                        model.Message = "unionid为空，未授权";
+                        resModel.baseView = model;
+                        resModel.userInfo = user;
+                    }
+                }
+                else
+                {
+                    model.ResponseCode = 8;
+                    model.Message = "unionid为空，未授权";
+                    resModel.baseView = model;
+                    resModel.userInfo = user;
+                }           
+            }
+
+            return resModel;
+        }
+
+
+
+
 
         /// <summary>  
         /// 根据微信小程序平台提供的签名验证算法验证用户发来的数据是否有效  
@@ -306,8 +464,10 @@ namespace Dto.Repository.IntellWeChat
             Dtol.Easydtol.UserInfo userInfo = new Dtol.Easydtol.UserInfo();
             var predicate = WhereExtension.True<Dtol.Easydtol.UserInfo>();
             predicate = predicate.And(p => p.Status.Equals("1"));
-            predicate = predicate.And(p => p.unionid.Equals(unionid));
-        
+            if (!string.IsNullOrEmpty(unionid))
+            {
+                predicate = predicate.And(p => p.unionid.Equals(unionid));
+            }
 
             var result = EasyDbSet.Where(predicate).ToList();
 

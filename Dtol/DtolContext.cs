@@ -57,6 +57,8 @@ namespace Dtol
         public DbSet<UserLogin_Log> UserLogin_Log { get; set; }
         public DbSet<LoginType> LoginType { get; set; }
         public DbSet<V_ReadLog> V_ReadLog { get; set; }
-        
+
+        public DbSet<V_OpenidUnionid> V_OpenidUnionid { get; set; }
+
     }
 }

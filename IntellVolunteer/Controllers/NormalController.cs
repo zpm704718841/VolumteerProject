@@ -177,6 +177,20 @@ namespace IntellVolunteer.Controllers
                 AddResModel.baseViewModel.Message = "签到成功";
                 AddResModel.baseViewModel.ResponseCode = 200;
             }
+            else if (Add_Count == 4)
+            {
+                AddResModel.IsSuccess = false;
+                AddResModel.AddCount = 0;
+                AddResModel.baseViewModel.Message = "您未认领当前时段的值班信息。";
+                AddResModel.baseViewModel.ResponseCode = 900;
+            }
+            else if (Add_Count == 5)
+            {
+                AddResModel.IsSuccess = false;
+                AddResModel.AddCount = 0;
+                AddResModel.baseViewModel.Message = "请在有效时间内进行签到签退";
+                AddResModel.baseViewModel.ResponseCode = 800;
+            }
             else if (Add_Count == 6)
             {
                 AddResModel.IsSuccess = false;
@@ -259,7 +273,7 @@ namespace IntellVolunteer.Controllers
         /// <summary>
         /// (小程序端接口) 获取该认领信息具体情况 包括签到、签退 现场图片等
         /// </summary>
-        /// <param name="SearchByIDAnduidModel "></param>
+        /// <param name="viewModel "></param>
         /// <returns></returns>
         [HttpPost]
         public ActionResult<MydutyClaim_InfoResModel> GetMydutyDetail(SearchByIDAnduidModel viewModel)

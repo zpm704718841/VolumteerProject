@@ -2,6 +2,7 @@
 using Dto.IRepository.IntellVolunteer;
 using Dto.IService.IntellVolunteer;
 using Dtol.dtol;
+using Dtol.Easydtol;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,9 +27,16 @@ namespace Dto.Service.IntellVolunteer
         private readonly IVolunteerActivityRepository _IVolunteerActivityRepository;
         private readonly IVolunteerInfoRepository _IVolunteerInfoRepository;
         private readonly IOndutyClaimsInfoRepository  _claimsInfoRepository;
+        private readonly IMydutyClaimInfoRepository _mydutyClaimInfo;
+        private readonly INormalizationInfoRepository _normalizationInfo;
+        private readonly IOndutyClaimsInfoRepository _ondutyClaimsInfoRepository;
+        private readonly IVolunteer_ScoreRepository _IVolunteer_ScoreRepository;
+        private readonly IET_pointsRepository eT_PointsRepository;
 
         public MydutyClaimInfoService(IMydutyClaimInfoRepository iMydutyClaimInfoRepository, IMapper iMapper, IMydutyClaim_SignRepository mydutyClaim_Sign, 
-            IVAttachmentRepository vAttachment, IVolunteerActivityRepository volunteerActivity, IVolunteerInfoRepository volunteerInfo, IOndutyClaimsInfoRepository ondutyClaimsInfo)
+            IVAttachmentRepository vAttachment, IVolunteerActivityRepository volunteerActivity, IVolunteerInfoRepository volunteerInfo, 
+            IOndutyClaimsInfoRepository ondutyClaimsInfo, IMydutyClaimInfoRepository mydutyClaimInfo, INormalizationInfoRepository normalizationInfoRepository,
+            IOndutyClaimsInfoRepository claimsInfoRepository, IVolunteer_ScoreRepository volunteer_Score, IET_pointsRepository pointsRepository)
         {
             _IMydutyClaimInfoRepository = iMydutyClaimInfoRepository;
             _IMapper = iMapper;
@@ -37,6 +45,11 @@ namespace Dto.Service.IntellVolunteer
             _IVolunteerActivityRepository = volunteerActivity;
             _IVolunteerInfoRepository = volunteerInfo;
             _claimsInfoRepository = ondutyClaimsInfo;
+            _mydutyClaimInfo = mydutyClaimInfo;
+            _normalizationInfo = normalizationInfoRepository;
+            _ondutyClaimsInfoRepository = claimsInfoRepository;
+            _IVolunteer_ScoreRepository = volunteer_Score;
+            eT_PointsRepository = pointsRepository;
         }
 
         public BaseViewModel getMydutyInfoAddService(MydutyClaimInfoAddViewModel mydutyClaimInfoAddViewModel)
@@ -45,18 +58,56 @@ namespace Dto.Service.IntellVolunteer
             if (mydutyClaimInfoAddViewModel.StartDutyTime >= DateTime.Now)
             {
                 var result = _IMapper.Map<MydutyClaimInfoAddViewModel, MydutyClaim_Info>(mydutyClaimInfoAddViewModel);
-                _IMydutyClaimInfoRepository.Add(result);
-                int i = _IMydutyClaimInfoRepository.SaveChanges();
-                if (i > 0)
+
+               
+                //获取已该值班信息 认领人数
+                int num = _IMydutyClaimInfoRepository.GetByParasNum(mydutyClaimInfoAddViewModel.OndutyClaims_InfoId,
+                    mydutyClaimInfoAddViewModel.StartDutyTime, mydutyClaimInfoAddViewModel.EndDutyTime);
+                //获取 可值班人数
+                OndutyClaims_Info ondutyClaims = _ondutyClaimsInfoRepository.GetByID(mydutyClaimInfoAddViewModel.OndutyClaims_InfoId);
+
+                //查询是否已经 被认领（已满员）  20200703
+                if (ondutyClaims.TotalReportNum<= num)
                 {
-                    baseView.ResponseCode = 0;
-                    baseView.Message = "认领成功";
+                    baseView.ResponseCode = 4;
+                    baseView.Message = "已经被认领，无法再次认领。";
                 }
                 else
                 {
-                    baseView.ResponseCode = 1;
-                    baseView.Message = "认领失败";
-                }
+                    //判断 是否已经认领同时段 信息
+                    if (_IMydutyClaimInfoRepository.GetByParas(mydutyClaimInfoAddViewModel.Userid, "",
+                    mydutyClaimInfoAddViewModel.StartDutyTime, mydutyClaimInfoAddViewModel.EndDutyTime))
+                    {
+                        baseView.ResponseCode = 5;
+                        baseView.Message = "您已认领同时段值班任务，无法再次认领。";
+                    }
+                    else
+                    {
+                        //查询是否本人是否已经认领过 20200623
+                        if (_IMydutyClaimInfoRepository.GetByParas(mydutyClaimInfoAddViewModel.Userid, mydutyClaimInfoAddViewModel.OndutyClaims_InfoId,
+                            mydutyClaimInfoAddViewModel.StartDutyTime, mydutyClaimInfoAddViewModel.EndDutyTime))
+                        {
+                            baseView.ResponseCode = 3;
+                            baseView.Message = "您已经认领无需再次认领。";
+                        }
+                        else
+                        {
+                            _IMydutyClaimInfoRepository.Add(result);
+                            int i = _IMydutyClaimInfoRepository.SaveChanges();
+                            if (i > 0)
+                            {
+                                baseView.ResponseCode = 0;
+                                baseView.Message = "认领成功";
+                            }
+                            else
+                            {
+                                baseView.ResponseCode = 1;
+                                baseView.Message = "认领失败";
+                            }
+                        }
+                    }
+                   
+                }         
             }
             else
             {
@@ -165,55 +216,72 @@ namespace Dto.Service.IntellVolunteer
 
             ////认领得 值班信息
             MydutyClaim_Info claim_Info = _IMydutyClaimInfoRepository.GetByUidandID(AddViewModel.VID, AddViewModel.ContentID);
-            if(claim_Info!=null)
+            if (claim_Info != null)
             {
-                OndutyClaims_Info ondutyClaims = _claimsInfoRepository.GetByID(claim_Info.OndutyClaims_InfoId);
-                if (ondutyClaims != null)
+                //判断是否在值班区间内进行打卡 20200622  值班时间前后15 分钟均可签到签退
+                DateTime start = DateTime.Parse(claim_Info.StartDutyTime.ToString());
+                DateTime end = DateTime.Parse(claim_Info.EndDutyTime.ToString());
+
+                if (DateTime.Now > start.AddMinutes(-15) && DateTime.Now < end.AddMinutes(15))
                 {
-                    model.OndutyClaims_InfoId = ondutyClaims.id; 
-                    model.MydutyClaim_InfoID = AddViewModel.ContentID;
-                    //获取小区经纬度信息
-                    List<User_Depart> departAll = _IVolunteerInfoRepository.GetDepartAll();
-
-                    var departList = _IMapper.Map<List<User_Depart>, List<UserDepartSearchMidModel>>(departAll);
-
-                    List<UserDepartSearchMidModel> result = new List<UserDepartSearchMidModel>();
-                    result.AddRange(departList.Where(p => p.Code == ondutyClaims.SubdistrictID).ToList());
-                    UserDepartSearchMidModel depart = new UserDepartSearchMidModel();
-                    if (result.Count>0)
+                    OndutyClaims_Info ondutyClaims = _claimsInfoRepository.GetByID(claim_Info.OndutyClaims_InfoId);
+                    if (ondutyClaims != null)
                     {
-                        depart = result.First();
-                    }
-                    
+                        model.OndutyClaims_InfoId = ondutyClaims.id;
+                        model.MydutyClaim_InfoID = AddViewModel.ContentID;
+                        //获取小区经纬度信息
+                        List<User_Depart> departAll = _IVolunteerInfoRepository.GetDepartAll();
 
-                    //获取 经纬度
-                    if (!String.IsNullOrEmpty(AddViewModel.Checklongitude) && !String.IsNullOrEmpty(AddViewModel.Checklatitude))
-                    {
-                        //进行地址判断 活动地址方圆500米可以签到
-                        if (!String.IsNullOrEmpty(depart.longitude) && !String.IsNullOrEmpty(depart.latitude))
+                        var departList = _IMapper.Map<List<User_Depart>, List<UserDepartSearchMidModel>>(departAll);
+
+                        List<UserDepartSearchMidModel> result = new List<UserDepartSearchMidModel>();
+                        result.AddRange(departList.Where(p => p.Code == ondutyClaims.SubdistrictID).ToList());
+                        UserDepartSearchMidModel depart = new UserDepartSearchMidModel();
+                        if (result.Count > 0)
                         {
-                            var checks = CheckAddress(double.Parse(depart.longitude), double.Parse(depart.latitude), double.Parse(AddViewModel.Checklongitude), double.Parse(AddViewModel.Checklatitude), 0.5);
-                            if (!checks)
+                            depart = result.First();
+                        }
+
+
+                        //获取 经纬度
+                        if (!String.IsNullOrEmpty(AddViewModel.Checklongitude) && !String.IsNullOrEmpty(AddViewModel.Checklatitude))
+                        {
+                            //进行地址判断 活动地址方圆1000米可以签到
+                            if (!String.IsNullOrEmpty(depart.longitude) && !String.IsNullOrEmpty(depart.latitude))
                             {
-                                count = 9;
+                                var checks = CheckAddress(double.Parse(depart.longitude), double.Parse(depart.latitude), double.Parse(AddViewModel.Checklongitude), double.Parse(AddViewModel.Checklatitude),1);
+                                if (!checks)
+                                {
+                                    count = 9;
+                                    return count;
+                                }
+                            }
+                            else
+                            {
+                                count = 8;
                                 return count;
                             }
                         }
                         else
                         {
-                            count = 8;
+                            count = 7;
                             return count;
                         }
-                    }
-                    else
-                    {
-                        count = 7;
-                        return count;
-                    }
 
+
+                    }
 
                 }
-
+                else
+                {
+                    count = 5;
+                    return count;
+                }
+            }
+            else
+            {
+                count = 4;
+                return count;
             }
 
             DEncrypt encrypt = new DEncrypt();
@@ -232,54 +300,43 @@ namespace Dto.Service.IntellVolunteer
         
             _mydutyClaim_Sign.Add(model);
             count = _mydutyClaim_Sign.SaveChanges();
-            //if (count == 1)
-            //{
-            //    string id = Guid.NewGuid().ToString();
-            //    //获得相应积分 (签到积分)
-            //    if (AddViewModel.type == "in")
-            //    {
-            //        Volunteer_Score score = new Volunteer_Score();
-            //        score.ID = id;
-            //        score.ContentID = AddViewModel.ContentID;
-            //        score.tableName = "VolunteerActivity";
-            //        score.VID = AddViewModel.VID;
-            //        score.type = "in";
-            //        score.Score = int.Parse(VolunteerActivity.Score);
-            //        score.CreateUser = AddViewModel.VID;
-            //        score.CreateDate = DateTime.Now;
+            if (count == 1)
+            {
+                string id = Guid.NewGuid().ToString();
+               
+                //签退 时按时长积分继续计算
+                if (AddViewModel.type == "out")
+                {
+                    Volunteer_Score score = new Volunteer_Score();
+                    score.ID = id;
+                    score.ContentID = AddViewModel.ContentID;
+                    score.tableName = "MydutyClaim_Info";
+                    score.VID = AddViewModel.VID;
+                    score.type = "out";
+                    score.Score = 1;
+                    score.CreateUser = AddViewModel.VID;
+                    score.CreateDate = DateTime.Now;
 
-            //        _IVolunteer_ScoreRepository.Add(score);
-            //        int b = _IVolunteer_ScoreRepository.SaveChanges();
-            //        if (b > 0)
-            //        {
-            //            //插入到 微官网积分表
-            //        }
-            //    }
-            //    //签退 时按时长积分继续计算
-            //    else if (AddViewModel.type == "out")
-            //    {
-            //        DateTime d1 = DateTime.Now;
-            //        DateTime d2 = DateTime.Parse(VolunteerActivity.Stime.ToString());
-            //        int Hours = (d1 - d2).Hours;//小时数差
-            //        int jf = int.Parse(VolunteerActivity.PerMinScore) * Hours;
-            //        Volunteer_Score score = new Volunteer_Score();
-            //        score.ID = id;
-            //        score.ContentID = AddViewModel.ContentID;
-            //        score.tableName = "VolunteerActivity";
-            //        score.VID = AddViewModel.VID;
-            //        score.type = "out";
-            //        score.Score = int.Parse(VolunteerActivity.PerMinScore) * Hours;
-            //        score.CreateUser = AddViewModel.VID;
-            //        score.CreateDate = DateTime.Now;
+                    _IVolunteer_ScoreRepository.Add(score);
+                    int b = _IVolunteer_ScoreRepository.SaveChanges();
+                    if (b > 0)
+                    {
+                        //插入到  泰便利积分表  20200622
+                        ET_points ipointMiddle = new ET_points();
 
-            //        _IVolunteer_ScoreRepository.Add(score);
-            //        int b = _IVolunteer_ScoreRepository.SaveChanges();
-            //        if (b > 0 && jf > 0)
-            //        {
-            //            //插入到  积分表
-            //        }
-            //    }
-            //}
+                        ipointMiddle.ID = id;
+                        ipointMiddle.uid = AddViewModel.VID;
+                        ipointMiddle.points = score.Score;
+                        ipointMiddle.type = "MydutySign";
+                        ipointMiddle.tableName = "TedaVolunteerDB.dbo.Volunteer_Score";
+                        ipointMiddle.CreateUser = AddViewModel.VID;
+                        ipointMiddle.CreateDate = DateTime.Now;
+                        eT_PointsRepository.Add(ipointMiddle);
+                        int j = eT_PointsRepository.SaveChanges();
+                       
+                    }
+                }
+            }
 
             return count;
         }
@@ -292,32 +349,73 @@ namespace Dto.Service.IntellVolunteer
 
             //获取基本信息
             var model1 = _IMydutyClaimInfoRepository.GetInfoById(viewModel.MydutyClaim_InfoID);
-            MyResModel.MiddleModel = _IMapper.Map<MydutyClaim_Info, MydutyClaimInfoSearchMiddleModel>(model1);
+            MyResModel.MiddleModel = _IMapper.Map<MydutyClaim_Info, MydutyClaimInfoMiddleModel>(model1);
+
+            var dutyInfo = _ondutyClaimsInfoRepository.GetByID(model1.OndutyClaims_InfoId);
+            if (dutyInfo != null)
+            {
+                //获取 社区、小区
+                MyResModel.MiddleModel.Subdistrict = dutyInfo.Subdistrict;
+                var normalInfo = _normalizationInfo.NormalizationByID(dutyInfo.Normalization_InfoId);
+                if (normalInfo != null)
+                {
+                    MyResModel.MiddleModel.Community = normalInfo.CommunityName;
+                }
+
+            }
+
 
             //获取 签到签退图片等信息
-            List<MydutyClaim_Sign> handleList = _mydutyClaim_Sign.GetByParas(viewModel);
+
+            List<MydutyClaim_Sign> handlelist = _mydutyClaim_Sign.GetByParas(viewModel);
             MydutyClaim_SignInfo signInfo = new MydutyClaim_SignInfo();
-            foreach (var itme in handleList)
+            foreach (var item in handlelist)
             {
                 //签到
-                if (itme.type == "in")
+                if (item.type == "in")
                 {
-                    signInfo.SignUpTime = itme.CheckTime.ToString();
+                    signInfo.SignUpTime = item.CheckTime.ToString();
                 }
                 //上传现场图片
-                if (itme.type == "img")
+                if (item.type == "img")
                 {
 
-                    var list = _vAttachmentRepository.GetMyList(itme.id);
+                    var list = _vAttachmentRepository.GetMyList(item.id);
                     var newlist = _IMapper.Map<List<VAttachment>, List<VAttachmentAddViewModel>>(list);
                     signInfo.VAttachmentList = newlist;
                 }
                 //签退
-                if (itme.type == "out")
+                if (item.type == "out")
                 {
-                    signInfo.SignOutTime = itme.CheckTime.ToString();
+                    signInfo.SignOutTime = item.CheckTime.ToString();
                 }
             }
+
+            //状态
+            MydutyClaim_Sign handle = _mydutyClaim_Sign.GetByParasOne(viewModel);
+            if (handle!=null)
+            {
+                //签到
+                if (handle.type == "in")
+                {
+                    MyResModel.MiddleModel.status = "img";
+                }
+                //上传现场图片
+                if (handle.type == "img")
+                {
+                    MyResModel.MiddleModel.status = "out";
+                }
+                //签退
+                if (handle.type == "out")
+                {
+                    MyResModel.MiddleModel.status = "done";
+                } 
+            }
+            else
+            {
+                MyResModel.MiddleModel.status = "in";
+            }
+
             MyResModel.claim_SignInfo = signInfo;
 
 
@@ -341,7 +439,7 @@ namespace Dto.Service.IntellVolunteer
         }
 
 
-        //根据 经纬度 判断是否在 dis  千米 范围内
+        //根据 经纬度 判断是否在 dis  (1千米  20200703)千米 范围内
         public virtual bool CheckAddress(double longitude, double latitude, double nowlon, double nowlat, double dis)
         {
             var res = false;

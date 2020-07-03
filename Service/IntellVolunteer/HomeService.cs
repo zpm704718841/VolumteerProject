@@ -88,10 +88,34 @@ namespace Dto.Service.IntellVolunteer
             Searches = Searches.Where(o => o.Stime >=DateTime.Now).OrderBy(o => o.Stime).ToList();
             foreach (var item in Searches)
             {
-                string date = DateTime.Parse(item.Stime.ToString()).ToString("yyyy-MM-dd");
-                if (!list.Contains(date))
+                //查看是否已经完结事件  bak3  显示 该用户针对活动的状态
+                var handle = _Va_HandleRepository.GetNewSign(vidModel.VID, item.ID);
+                if (handle != null && handle.ID != null)
                 {
-                    list.Add(date);
+                    if (handle.type == "in")
+                    {
+                        item.bak3 = "上传现场图片";
+                    }
+                    if (handle.type == "img")
+                    {
+                        item.bak3 = "待签退";
+                    }
+                    if (handle.type == "out")
+                    {
+                        item.bak3 = "已完结";
+                    }
+                }
+                else
+                {
+                    item.bak3 = "待签到";
+                }
+                if(item.bak3 != "已完结")
+                {
+                    string date = DateTime.Parse(item.Stime.ToString()).ToString("yyyy-MM-dd");
+                    if (!list.Contains(date))
+                    {
+                        list.Add(date);
+                    }
                 }
             }
 
@@ -101,11 +125,40 @@ namespace Dto.Service.IntellVolunteer
 
             foreach (var item in myduties)
             {
-                string date = DateTime.Parse(item.StartDutyTime.ToString()).ToString("yyyy-MM-dd");
-                if (!list.Contains(date))
+                MydutyClaimInfoMiddleModel mydutyClaimInfo = new MydutyClaimInfoMiddleModel();
+                SearchByIDAnduidModel searchByID = new SearchByIDAnduidModel();
+                searchByID.MydutyClaim_InfoID = item.id;
+                searchByID.uid = item.Userid;
+                MydutyClaim_Sign ii = _mydutyClaim_Sign.GetByParasOne(searchByID);
+
+                if (ii != null && ii.id != null)
                 {
-                    list.Add(date);
+                    if (ii.type == "in")
+                    {
+                        item.status = "上传现场图片";
+                    }
+                    if (ii.type == "img")
+                    {
+                        item.status = "待签退";
+                    }
+                    if (ii.type == "out")
+                    {
+                        item.status = "已完结";
+                    }
                 }
+                else
+                {
+                    item.status = "待签到";
+                }
+                //已经完结的 事项不再显示，只显示待办信息 20200622
+                if (item.status != "已完结")
+                {
+                    string date = DateTime.Parse(item.StartDutyTime.ToString()).ToString("yyyy-MM-dd");
+                    if (!list.Contains(date))
+                    {
+                        list.Add(date);
+                    }
+                }                
             }
             return list;
 
@@ -152,8 +205,9 @@ namespace Dto.Service.IntellVolunteer
                 {
                     item.bak3 = "待签到";
                 }
-
             }
+
+            Searches.RemoveAll(o => o.bak3.Equals("已完结"));
 
             return Searches;
         }
@@ -224,7 +278,10 @@ namespace Dto.Service.IntellVolunteer
                 models.Add(mydutyClaimInfo);
             }
 
+            models.RemoveAll(o => o.status.Equals("已完结"));
+
          
+
             return models;
         }
 

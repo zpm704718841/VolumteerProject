@@ -18,5 +18,6 @@ namespace Dtol
         }
 
         public DbSet<UserInfo> UserInfo { get; set; }
+        public DbSet<ET_points> ET_points { get; set; }
     }
 }

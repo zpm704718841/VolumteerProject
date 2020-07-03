@@ -7,6 +7,7 @@ using ViewModel.WeChatViewModel.ResponseModel;
 using ViewModel.WeChatViewModel.RequestViewModel;
 using ViewModel.PublicViewModel;
 using Dtol.Easydtol;
+using ViewModel.VolunteerModel.RequsetModel;
 
 namespace Dto.IService.IntellWeChat
 {
@@ -38,6 +39,7 @@ namespace Dto.IService.IntellWeChat
         /// </summary>
         UserInfo GetEasyUserInfo(string code);
 
+       
         int AddToken(V_GetTokenAddModel addModel);
 
 

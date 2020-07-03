@@ -17,5 +17,9 @@ namespace Dto.IRepository.IntellVolunteer
         List<MydutyClaim_Info> GetByUid(string uid);
         MydutyClaim_Info GetByUidandID(string uid, string id);
 
+        bool GetByParas(string uid, string OndutyClaims_InfoId, DateTime? StartDutyTime, DateTime? EndDutyTime);
+
+        //获取 该值班信息 认领人数
+        int GetByParasNum(string OndutyClaims_InfoId, DateTime? StartDutyTime, DateTime? EndDutyTime);
     }
 }

@@ -12,6 +12,7 @@ using ViewModel.VolunteerModel.MiddleModel;
 using ViewModel.VolunteerModel.RequsetModel;
 using ViewModel.VolunteerModel.ResponseModel;
 using ViewModel.PublicViewModel;
+using Dtol.Easydtol;
 
 namespace Dto.Service.IntellVolunteer
 {
@@ -28,7 +29,11 @@ namespace Dto.Service.IntellVolunteer
         private readonly IMapper _IMapper;
         private readonly IVolunteer_ScoreRepository _IVolunteer_ScoreRepository;
         private readonly IVolunteer_MessageRepository _IVolunteer_MessageRepository;
-        public VHelpAreaByVService(IVHelpAreaRepository iInfoRepository, IVolunteerInfoRepository volunteerInfo, IVHA_SignRepository vha_SignRepository, IVHA_HandleRepository handleRepository, IVAttachmentRepository vAttachment, ISQLRepository SQL, IVA_HandleRepository vA_Handle, IMapper mapper, IAISQLRepository aisqlRepository, IVolunteer_ScoreRepository scoreRepository, IVolunteer_MessageRepository messageRepository)
+        private readonly IET_pointsRepository eT_PointsRepository;
+        public VHelpAreaByVService(IVHelpAreaRepository iInfoRepository, IVolunteerInfoRepository volunteerInfo, IVHA_SignRepository vha_SignRepository, 
+            IVHA_HandleRepository handleRepository, IVAttachmentRepository vAttachment, ISQLRepository SQL, IVA_HandleRepository vA_Handle, 
+            IMapper mapper, IAISQLRepository aisqlRepository, IVolunteer_ScoreRepository scoreRepository, IVolunteer_MessageRepository messageRepository,
+            IET_pointsRepository pointsRepository )
         {
             _IVHelpAreaRepository = iInfoRepository;
             _IVolunteerInfoRepository = volunteerInfo;
@@ -41,6 +46,7 @@ namespace Dto.Service.IntellVolunteer
             _IMapper = mapper;
             _IVolunteer_ScoreRepository = scoreRepository;
             _IVolunteer_MessageRepository = messageRepository;
+            eT_PointsRepository = pointsRepository;
         }
 
         //社区居民上传互助信息（名称、内容、所需擅长技能、姓名、联系方式、详细地址、可得积分）
@@ -375,18 +381,19 @@ namespace Dto.Service.IntellVolunteer
                 int n = _IVolunteer_ScoreRepository.SaveChanges();
                 if (n > 0)
                 {
-                    //插入到 微官网积分表
-                    AIpointMiddle ipointMiddle = new AIpointMiddle();
+                    //插入到 泰便利积分表 20200622
+                    ET_points ipointMiddle = new ET_points();
 
                     ipointMiddle.ID = id;
-                    ipointMiddle.UserID = VolunteerInfo.ID;
-                    ipointMiddle.unionid = VolunteerInfo.unionid;
-                    ipointMiddle.points = area.Score;
+                    ipointMiddle.uid = VolunteerInfo.ID;
+                    ipointMiddle.points = int.Parse(area.Score);
                     ipointMiddle.type = "VolunteerHelp";
                     ipointMiddle.tableName = "TedaVolunteerDB.dbo.Volunteer_Score";
-                    ipointMiddle.mobile = VolunteerInfo.Mobile;
+                    ipointMiddle.CreateUser = VolunteerInfo.ID;
+                    ipointMiddle.CreateDate = DateTime.Now;
+                    eT_PointsRepository.Add(ipointMiddle);
+                    int j = eT_PointsRepository.SaveChanges();
 
-                    int m = _IAISQLRepository.InsertPoints(ipointMiddle);
                 }
 
 

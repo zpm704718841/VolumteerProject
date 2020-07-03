@@ -4,14 +4,16 @@ using Dtol;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Dtol.Migrations
 {
     [DbContext(typeof(DtolContext))]
-    partial class DtolContextModelSnapshot : ModelSnapshot
+    [Migration("20200629095537_addtables2")]
+    partial class addtables2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -982,8 +984,9 @@ namespace Dtol.Migrations
 
             modelBuilder.Entity("Dtol.dtol.V_OpenidUnionid", b =>
                 {
-                    b.Property<string>("id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("bak1");
 

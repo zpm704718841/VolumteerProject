@@ -106,19 +106,76 @@ namespace Dto.Service.IntellVolunteer
         {
             Dtol.Easydtol.UserInfo user_Info = _IWeChatClientRepository.EasyDecrypt(code, _IOptions.Value.appid, _IOptions.Value.secret);
             //判断 是否注册泰便利
-            if (user_Info.ID != null)
+            if (user_Info!=null)
             {
-                DEncrypt encrypt = new DEncrypt();
-                string Name = encrypt.Decrypt(user_Info.Name);
-                string CertificateID = encrypt.Decrypt(user_Info.CertificateID);
-                string Mobile = encrypt.Decrypt(user_Info.Mobile);
+                if (user_Info.ID != null)
+                {
+                    DEncrypt encrypt = new DEncrypt();
+                    string Name = encrypt.Decrypt(user_Info.Name);
+                    string CertificateID = encrypt.Decrypt(user_Info.CertificateID);
+                    string Mobile = encrypt.Decrypt(user_Info.Mobile);
 
-                user_Info.Name = Name;
-                user_Info.CertificateID = CertificateID;
-                user_Info.Mobile = Mobile;
-
+                    user_Info.Name = Name;
+                    user_Info.CertificateID = CertificateID;
+                    user_Info.Mobile = Mobile;
+                }
             }
             return user_Info;
+        }
+
+        /// <summary>
+        /// 20200629  用户授权 通过解密获取unionid  再查询是否是泰便利注册用户 
+        /// </summary>
+        public UserInfoResModel GetWeChartUserInfoByDE(WeChatCodeDEModel model)
+        {
+            UserInfoResModel resModel = new UserInfoResModel();
+
+            resModel = _IWeChatClientRepository.EasyDecryptByDE(model, _IOptions.Value.appid, _IOptions.Value.secret);
+            //判断 是否注册泰便利
+            if (resModel.userInfo != null)
+            {
+                if (resModel.userInfo.ID != null)
+                {
+                    DEncrypt encrypt = new DEncrypt();
+                    string Name = encrypt.Decrypt(resModel.userInfo.Name);
+                    string CertificateID = encrypt.Decrypt(resModel.userInfo.CertificateID);
+                    string Mobile = encrypt.Decrypt(resModel.userInfo.Mobile);
+
+                    resModel.userInfo.Name = Name;
+                    resModel.userInfo.CertificateID = CertificateID;
+                    resModel.userInfo.Mobile = Mobile;
+                }
+            }
+            
+ 
+            return resModel;
+        }
+
+
+        /// <summary>
+        /// 20200629 用户初次进入自愿者小程序  判断是否能获取unionid，如果有unionid验证用户是否是泰便利注册用户，如果是返回泰便利用户中心信息，如果不是返回空 
+        /// </summary>
+        public UserInfoResModel GetEasyUserInfoByCode(string code)
+        {
+            UserInfoResModel resModel = new UserInfoResModel();
+
+            resModel = _IWeChatClientRepository.EasyDecryptByCode(code, _IOptions.Value.appid, _IOptions.Value.secret);
+            //判断 是否注册泰便利
+            if (resModel.userInfo != null)
+            {
+                if (resModel.userInfo.ID != null)
+                {
+                    DEncrypt encrypt = new DEncrypt();
+                    string Name = encrypt.Decrypt(resModel.userInfo.Name);
+                    string CertificateID = encrypt.Decrypt(resModel.userInfo.CertificateID);
+                    string Mobile = encrypt.Decrypt(resModel.userInfo.Mobile);
+
+                    resModel.userInfo.Name = Name;
+                    resModel.userInfo.CertificateID = CertificateID;
+                    resModel.userInfo.Mobile = Mobile;
+                }
+            }
+            return resModel;
         }
 
 

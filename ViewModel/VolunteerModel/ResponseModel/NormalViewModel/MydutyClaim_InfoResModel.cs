@@ -9,7 +9,7 @@ namespace ViewModel.VolunteerModel.ResponseModel.NormalViewModel
     public class MydutyClaim_InfoResModel
     {
         public bool isSuccess;
-        public MydutyClaimInfoSearchMiddleModel MiddleModel;
+        public MydutyClaimInfoMiddleModel MiddleModel;
         public MydutyClaim_SignInfo claim_SignInfo;
         public BaseViewModel baseViewModel;
         public int TotalNum;

@@ -147,5 +147,43 @@ namespace Dto.Repository.IntellVolunteer
             }
             
         }
+
+
+        public bool GetByParas(string uid,string OndutyClaims_InfoId,DateTime? StartDutyTime, DateTime? EndDutyTime)
+        {
+            var predicate = WhereExtension.True<MydutyClaim_Info>();//初始化where表达式
+            if(!string.IsNullOrEmpty(uid))
+            {
+                predicate = predicate.And(p => p.Userid.Equals(uid));
+            }
+            if (!string.IsNullOrEmpty(OndutyClaims_InfoId))
+            {
+                predicate = predicate.And(p => p.OndutyClaims_InfoId.Equals(OndutyClaims_InfoId));
+
+            }
+            predicate = predicate.And(p => p.StartDutyTime.Equals(StartDutyTime));
+            predicate = predicate.And(p => p.EndDutyTime.Equals(EndDutyTime));
+            var result = DbSet.Where(predicate).OrderBy(a => a.CreateDate).ToList();
+            if (result.Count > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
+        //获取 该值班信息 认领人数
+        public int GetByParasNum(string OndutyClaims_InfoId, DateTime? StartDutyTime, DateTime? EndDutyTime)
+        {
+            var predicate = WhereExtension.True<MydutyClaim_Info>();//初始化where表达式
+            predicate = predicate.And(p => p.OndutyClaims_InfoId.Equals(OndutyClaims_InfoId));
+            predicate = predicate.And(p => p.StartDutyTime.Equals(StartDutyTime));
+            predicate = predicate.And(p => p.EndDutyTime.Equals(EndDutyTime));
+            var result = DbSet.Where(predicate).OrderBy(a => a.CreateDate).ToList();
+            return result.Count;
+        }
     }
 }

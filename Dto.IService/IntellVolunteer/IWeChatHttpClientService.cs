@@ -8,6 +8,7 @@ using ViewModel.WeChatViewModel.RequestViewModel;
 using ViewModel.PublicViewModel;
 using Dtol.Easydtol;
 using ViewModel.VolunteerModel.RequsetModel;
+using ViewModel.VolunteerModel.ResponseModel;
 
 namespace Dto.IService.IntellVolunteer
 {
@@ -27,6 +28,16 @@ namespace Dto.IService.IntellVolunteer
         /// 20200510 Easy 用户初次进入自愿者小程序验证用户是否是泰便利注册用户，如果是返回泰便利用户中心信息，如果不是返回空  
         /// </summary>
         UserInfo GetEasyUserInfo(string code);
+
+        //20200629  用户授权 通过解密获取unionid  再查询是否是泰便利注册用户 
+        UserInfoResModel GetWeChartUserInfoByDE(WeChatCodeDEModel model);
+
+
+        /// <summary>
+        ///20200629 用户初次进入自愿者小程序  判断是否能获取unionid，如果有unionid验证用户是否是泰便利注册用户，如果是返回泰便利用户中心信息，如果不是返回空 
+        /// </summary>
+        UserInfoResModel GetEasyUserInfoByCode(string code);
+
 
         int AddToken(V_GetTokenAddModel addModel);
 

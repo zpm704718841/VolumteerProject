@@ -20,7 +20,7 @@ using System.Web;
 using System.Net;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
-
+using Dtol.Easydtol;
 
 namespace Dto.Service.IntellVolunteer
 {
@@ -39,8 +39,13 @@ namespace Dto.Service.IntellVolunteer
         private readonly IAISQLRepository _IAISQLRepository;
         private readonly IVolunteer_ScoreRepository _IVolunteer_ScoreRepository;
         private readonly IVolunteer_MessageRepository _IVolunteer_MessageRepository;
+        private readonly IET_pointsRepository eT_PointsRepository;
 
-        public VolunteerActivityService(IVolunteerActivityRepository iInfoRepository, IMapper mapper, IVActivity_Relate_TypeRepository relate_TypeRepository, IVolunteerInfoRepository infoRepository, IVA_SignRepository va_SignRepository, IVolunteer_Relate_TypeRepository volunteer_Relate_TypeRepository, IBaseTypeRepository baseTypeRepository, IVA_HandleRepository va_HandleRepository, IVAttachmentRepository AttachmentRepository, ISQLRepository sqlRepository, IVolunteer_ScoreRepository scoreRepository, IAISQLRepository aisqlRepository, IVolunteer_MessageRepository messageRepository)
+        public VolunteerActivityService(IVolunteerActivityRepository iInfoRepository, IMapper mapper, IVActivity_Relate_TypeRepository relate_TypeRepository,
+            IVolunteerInfoRepository infoRepository, IVA_SignRepository va_SignRepository, IVolunteer_Relate_TypeRepository volunteer_Relate_TypeRepository,
+            IBaseTypeRepository baseTypeRepository, IVA_HandleRepository va_HandleRepository, IVAttachmentRepository AttachmentRepository, 
+            ISQLRepository sqlRepository, IVolunteer_ScoreRepository scoreRepository, IAISQLRepository aisqlRepository, IVolunteer_MessageRepository messageRepository,
+            IET_pointsRepository pointsRepository)
         {
             _IVolunteerActivityRepository = iInfoRepository;
             _IVActivity_Relate_TypeRepository = relate_TypeRepository;
@@ -55,6 +60,7 @@ namespace Dto.Service.IntellVolunteer
             _IAISQLRepository = aisqlRepository;
             _IVolunteer_ScoreRepository = scoreRepository;
             _IVolunteer_MessageRepository = messageRepository;
+            eT_PointsRepository = pointsRepository;
 
         }
 
@@ -433,18 +439,19 @@ namespace Dto.Service.IntellVolunteer
                     int b = _IVolunteer_ScoreRepository.SaveChanges();
                     if(b>0)
                     {
-                        //插入到 微官网积分表
-                        AIpointMiddle ipointMiddle = new AIpointMiddle();
-
+                        //插入到 泰便利积分表  20200622
+                        ET_points ipointMiddle = new ET_points();
+                         
                         ipointMiddle.ID = id;
-                        ipointMiddle.UserID = VolunteerInfo.ID;
-                        ipointMiddle.unionid = VolunteerInfo.unionid;
-                        ipointMiddle.points = VolunteerActivity.Score;
+                        ipointMiddle.uid = AddViewModel.VID;
+                        ipointMiddle.points = score.Score;
                         ipointMiddle.type = "VolunteerActivitySignIn";
                         ipointMiddle.tableName = "TedaVolunteerDB.dbo.Volunteer_Score";
-                        ipointMiddle.mobile = VolunteerInfo.Mobile;
+                        ipointMiddle.CreateUser = AddViewModel.VID;
+                        ipointMiddle.CreateDate = DateTime.Now;
+                        eT_PointsRepository.Add(ipointMiddle);
+                        int j = eT_PointsRepository.SaveChanges();
 
-                        int m = _IAISQLRepository.InsertPoints(ipointMiddle);
                     }
                 }
                 //签退 时按时长积分继续计算
@@ -468,19 +475,18 @@ namespace Dto.Service.IntellVolunteer
                     int b = _IVolunteer_ScoreRepository.SaveChanges();
                     if(b>0 && jf>0)
                     {
-                        //插入到 微官网积分表
-                        AIpointMiddle ipointMiddle = new AIpointMiddle();
+                        //插入到 泰便利积分表  20200622
+                        ET_points ipointMiddle = new ET_points();
 
                         ipointMiddle.ID = id;
-                        ipointMiddle.UserID = VolunteerInfo.ID;
-                        ipointMiddle.unionid = VolunteerInfo.unionid;
-                        ipointMiddle.points = (jf).ToString();
+                        ipointMiddle.uid = AddViewModel.VID;
+                        ipointMiddle.points = score.Score;
                         ipointMiddle.type = "VolunteerActivitySignOut";
                         ipointMiddle.tableName = "TedaVolunteerDB.dbo.Volunteer_Score";
-                        ipointMiddle.mobile = VolunteerInfo.Mobile;
-
-                        int m = _IAISQLRepository.InsertPoints(ipointMiddle);
-
+                        ipointMiddle.CreateUser = AddViewModel.VID;
+                        ipointMiddle.CreateDate = DateTime.Now;
+                        eT_PointsRepository.Add(ipointMiddle);
+                        int j = eT_PointsRepository.SaveChanges();
                     }
                 }
             }
