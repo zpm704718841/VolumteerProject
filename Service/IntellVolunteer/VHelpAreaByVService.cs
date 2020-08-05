@@ -373,7 +373,7 @@ namespace Dto.Service.IntellVolunteer
                 score.tableName = "VHelpArea";
                 score.VID = model.VID;
                 score.type = "done";
-                score.Score = int.Parse(area.Score);
+                score.Score = double.Parse(area.Score);
                 score.CreateUser = model.VID;
                 score.CreateDate = DateTime.Now;
 
@@ -386,7 +386,7 @@ namespace Dto.Service.IntellVolunteer
 
                     ipointMiddle.ID = id;
                     ipointMiddle.uid = VolunteerInfo.ID;
-                    ipointMiddle.points = int.Parse(area.Score);
+                    ipointMiddle.points = double.Parse(area.Score);
                     ipointMiddle.type = "VolunteerHelp";
                     ipointMiddle.tableName = "TedaVolunteerDB.dbo.Volunteer_Score";
                     ipointMiddle.CreateUser = VolunteerInfo.ID;

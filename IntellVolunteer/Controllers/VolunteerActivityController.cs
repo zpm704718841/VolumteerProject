@@ -239,42 +239,56 @@ namespace IntellVolunteer.Controllers
             {
                 AddResModel.IsSuccess = true;
                 AddResModel.AddCount = Add_Count;
-                AddResModel.baseViewModel.Message = "签到成功";
+                AddResModel.baseViewModel.Message = "操作成功";
                 AddResModel.baseViewModel.ResponseCode = 200;
+            }
+            else if (Add_Count == 4)
+            {
+                AddResModel.IsSuccess = false;
+                AddResModel.AddCount = 0;
+                AddResModel.baseViewModel.Message = "已签退，无法多次签退。";
+                AddResModel.baseViewModel.ResponseCode = 900;
+            }
+            else if (Add_Count == 5)
+            {
+                AddResModel.IsSuccess = false;
+                AddResModel.AddCount = 0;
+                AddResModel.baseViewModel.Message = "必填参数为空。";
+                AddResModel.baseViewModel.ResponseCode = 800;
             }
             else if (Add_Count == 6)
             {
                 AddResModel.IsSuccess = false;
                 AddResModel.AddCount = 0;
-                AddResModel.baseViewModel.Message = "您还未进行注册请先注册";
+                AddResModel.baseViewModel.Message = "您还未进行注册请先注册。";
                 AddResModel.baseViewModel.ResponseCode = 700;
             }
             else if (Add_Count == 7)
             {
                 AddResModel.IsSuccess = false;
                 AddResModel.AddCount = 0;
-                AddResModel.baseViewModel.Message = "签到地址有误签到失败";
+                AddResModel.baseViewModel.Message = "签到地址有误签到失败。";
                 AddResModel.baseViewModel.ResponseCode = 600;
             }
             else if (Add_Count == 8)
             {
                 AddResModel.IsSuccess = false;
                 AddResModel.AddCount = 0;
-                AddResModel.baseViewModel.Message = "活动地址有误签到失败";
+                AddResModel.baseViewModel.Message = "活动地址有误签到失败。";
                 AddResModel.baseViewModel.ResponseCode = 500;
             }
             else if (Add_Count == 9)
             {
                 AddResModel.IsSuccess = false;
                 AddResModel.AddCount = 0;
-                AddResModel.baseViewModel.Message = "签到地址不在活动范围500米内";
+                AddResModel.baseViewModel.Message = "签到地址不在活动范围500米内。";
                 AddResModel.baseViewModel.ResponseCode = 400;
             }
             else
             {
                 AddResModel.IsSuccess = false;
                 AddResModel.AddCount = 0;
-                AddResModel.baseViewModel.Message = "签到失败";
+                AddResModel.baseViewModel.Message = "操作失败。";
                 AddResModel.baseViewModel.ResponseCode = 300;
             }
             return Ok(AddResModel);
@@ -291,6 +305,13 @@ namespace IntellVolunteer.Controllers
             int Add_Count = 0;
             VAttachmentAddResModel AddResModel = new VAttachmentAddResModel();
             Add_Count = _VolunteerActivityService.SubmitImg(AddViewModel);
+            if (Add_Count == 8)
+            {
+                AddResModel.IsSuccess = false;
+                AddResModel.AddCount = 0;
+                AddResModel.baseViewModel.Message = "请上传现场图片";
+                AddResModel.baseViewModel.ResponseCode = 800;
+            }
             if (Add_Count == 9)
             {
                 AddResModel.IsSuccess = false;

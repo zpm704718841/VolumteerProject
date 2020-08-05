@@ -31,54 +31,10 @@ namespace IntellVolunteer.Controllers
             //_ILogger = logger;
         }
 
-        /// <summary>
-        /// (小程序端接口) 测试文件上传 1
-        /// </summary>
-        /// <param name="files"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public async Task<IActionResult> UploadAsync(List<IFormFile> files)
-        {
-            long size = files.Sum(f => f.Length);
-
-           
-            var filepath = Directory.GetCurrentDirectory() + "\\file";
-            var newpath = String.Empty;
-            UploadFileAddResModel model = new UploadFileAddResModel();
-
-            foreach (var file in files)
-            {
-                if (file.Length > 0)
-                {
-                    //获取文件后缀
-                    string extensionName = System.IO.Path.GetExtension(file.FileName);
-                    //存储时生成新文件名
-                    model.internalName = System.Guid.NewGuid().ToString("N") + extensionName;
-
-                    var filePath = System.IO.Path.Combine(filepath, model.internalName).Replace("\\", "/");
-                    newpath = filePath;
- 
-                    //文件名
-                    model.fileName = file.FileName;
-                    model.length = file.Length.ToString();                
-
-                    model.path = newpath;
-                    //获取临时文件相对完整路径
-                    model.url = System.IO.Path.Combine("https://bhteda.com/Volunteer/file", model.internalName).Replace("\\", "/");                   
-
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await file.CopyToAsync(stream);
-                    }
-                }
-            }
-
-            return Ok(Newtonsoft.Json.JsonConvert.SerializeObject(model));
-        }
 
 
         /// <summary>
-        /// (小程序端接口) 测试文件上传 2
+        /// (小程序端接口) 文件上传
         /// </summary>
         /// <param name="formCollection"></param>
         /// <returns></returns>
@@ -102,32 +58,9 @@ namespace IntellVolunteer.Controllers
         }
 
 
-        /// <summary>
-        /// (小程序端接口) 测试文件上传 3
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        public ActionResult uploadfile()
-        {
-            var files = Request.Form.Files;
-            String RandFileName = "";
-
-            if (files.Count == 0)
-            {
-                throw new ArgumentException("找不到上传的文件");
-            }
-            foreach (var formFile in files)
-            {
-                RandFileName = _FileUploadService.UploadFile(formFile);
-            }
-            return Ok(RandFileName);
-        }
-
-
-
 
         /// <summary>
-        /// (小程序端接口) 测试文件上传 4
+        /// (小程序端接口) 文件上传
         /// </summary>
         /// <param name="formCollection"></param>
         /// <returns></returns>

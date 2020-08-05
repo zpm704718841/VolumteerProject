@@ -214,6 +214,7 @@ namespace Dto.Service.IntellVolunteer
                 return count;
             }
 
+            double points = 0;
             ////认领得 值班信息
             MydutyClaim_Info claim_Info = _IMydutyClaimInfoRepository.GetByUidandID(AddViewModel.VID, AddViewModel.ContentID);
             if (claim_Info != null)
@@ -227,6 +228,12 @@ namespace Dto.Service.IntellVolunteer
                     OndutyClaims_Info ondutyClaims = _claimsInfoRepository.GetByID(claim_Info.OndutyClaims_InfoId);
                     if (ondutyClaims != null)
                     {
+                        Normalization_Info Normalization = _normalizationInfo.NormalizationByID(ondutyClaims.Normalization_InfoId);
+                        if(Normalization!=null)
+                        {
+                            points = double.Parse(Normalization.PointsEarned);
+                        }
+
                         model.OndutyClaims_InfoId = ondutyClaims.id;
                         model.MydutyClaim_InfoID = AddViewModel.ContentID;
                         //获取小区经纬度信息
@@ -313,7 +320,7 @@ namespace Dto.Service.IntellVolunteer
                     score.tableName = "MydutyClaim_Info";
                     score.VID = AddViewModel.VID;
                     score.type = "out";
-                    score.Score = 1;
+                    score.Score = points;
                     score.CreateUser = AddViewModel.VID;
                     score.CreateDate = DateTime.Now;
 

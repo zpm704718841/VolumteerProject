@@ -84,8 +84,10 @@ namespace Dto.Service.IntellVolunteer
             List<VolunteerActivity> middle = _IVolunteerActivityRepository.GetByIDList(Infos);
             Searches = _IMapper.Map<List<VolunteerActivity>, List<VolunteerActivitySearchMiddle>>(middle);
 
-            ////获取当前用户 今天以后的报名活动情况 日期列表
-            Searches = Searches.Where(o => o.Stime >=DateTime.Now).OrderBy(o => o.Stime).ToList();
+            //获取当前用户 今天以后的报名活动情况 日期列表
+            //如果签退时间在活动结束之后 则需要按照  签退时间 判断
+          
+            Searches = Searches.Where(o => (o.SignOutEtime == null  && o.Etime >= DateTime.Now) || (o.SignOutEtime != null && o.SignOutEtime >= DateTime.Now)).OrderBy(o => o.Stime).ToList();
             foreach (var item in Searches)
             {
                 //查看是否已经完结事件  bak3  显示 该用户针对活动的状态
@@ -177,9 +179,18 @@ namespace Dto.Service.IntellVolunteer
 
             if (!String.IsNullOrEmpty(vidModel.Date))
             {
-                Searches = Searches.Where(o => DateTime.Parse(o.Stime.ToString()).ToString("yyyy-MM-dd") == vidModel.Date).OrderBy(o => o.Stime).ToList();
+                if (vidModel.Date == DateTime.Now.ToString("yyyy-MM-dd"))
+                {
+                    Searches = Searches.Where(o => (o.SignOutEtime == null && o.Etime >= DateTime.Now) || (o.SignOutEtime != null && o.SignOutEtime >= DateTime.Now)).OrderBy(o => o.Stime).ToList();
+
+                }
+                else
+                {
+                    Searches = Searches.Where(o => DateTime.Parse(o.Stime.ToString()).ToString("yyyy-MM-dd") == vidModel.Date).OrderBy(o => o.Stime).ToList();
+                }
+
             }
-            
+
             foreach (var item in Searches)
             {
                 //bak3  显示 该用户针对活动的状态

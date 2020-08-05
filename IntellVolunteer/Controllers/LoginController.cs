@@ -217,5 +217,16 @@ namespace IntellVolunteer.Controllers
         }
 
 
+
+        /// <summary>
+        ///  (小程序端接口)  向用户推送消息接口
+        /// </summary>
+        [HttpPost]
+        public async Task<BaseViewModel> SendMessage(SendMessageModel model)
+        {
+            BaseViewModel res = new BaseViewModel();
+            res = await _weChatHttpClientService.SendMessageService(model);
+            return res;
+        }
     }
 }

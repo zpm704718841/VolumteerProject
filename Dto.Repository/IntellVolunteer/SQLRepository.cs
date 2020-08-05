@@ -129,7 +129,7 @@ namespace Dto.Repository.IntellVolunteer
                 connection.Open();
 
                 string sql = " select bb.*,cc.Name,cc.Nickname,cc.VNO,cc.Community,cc.Headimgurl from (select aa.VID,aa.scores,rank () over( order by aa.scores desc) rankNo from ( " +
-                            " select vid, sum(score) as scores  from Volunteer_Score  group by vid )as aa ) as bb left join Volunteer_Info cc on bb.VID = cc.ID ";
+                            " select vid, sum(score) as scores  from Volunteer_Score  group by vid )as aa ) as bb left join Volunteer_Info cc on bb.VID = cc.ID  where  cc.vno !=null or cc.vno<>'' order by rankNo";
                 var res = connection.Query<VScoreRankMiddle>(sql).ToList();
                 connection.Close();
                 return res;

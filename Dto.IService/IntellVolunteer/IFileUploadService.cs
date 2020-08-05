@@ -13,7 +13,7 @@ namespace Dto.IService.IntellVolunteer
 {
     public interface IFileUploadService
     {
-        string UploadFile(IFormFile formFile);
+     
 
         string PostFile(IFormFile formFile);
 

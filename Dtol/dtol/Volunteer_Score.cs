@@ -11,7 +11,7 @@ namespace Dtol.dtol
         public string tableName { get; set; }
         public string VID { get; set; }
         public string type { get; set; }
-        public int Score { get; set; }
+        public double Score { get; set; }
         public string Memo { get; set; }
         public string CreateUser { get; set; }
         public DateTime? CreateDate { get; set; }

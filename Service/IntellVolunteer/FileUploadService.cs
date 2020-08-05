@@ -21,22 +21,6 @@ namespace Dto.Service.IntellVolunteer
              
         }
 
-        public string UploadFile(IFormFile formFile)
-        {
-            string filePath = "";//上传文件的路径
-            string RandName = "";
-            string[] fileTail = formFile.FileName.Split('.');
-            RandName = DateTime.Now.ToString("yyyyMMddHHmmssffff") + "." + fileTail[1];
-            filePath = Directory.GetCurrentDirectory() + "\\files\\" + RandName;
-            if (formFile.Length > 0)
-            {
-                //using (var stream = new FileStream(filePath, FileMode.Create))
-                //{
-                //    formFile.CopyTo(stream);
-                //}
-            }
-            return RandName;
-        }
 
         public string PostFile(IFormFile file)
         {
@@ -61,7 +45,7 @@ namespace Dto.Service.IntellVolunteer
 
                 model.path = newpath;
                 //获取临时文件相对完整路径
-                model.url = System.IO.Path.Combine("https://bhteda.com/Volunteer/file", model.internalName).Replace("\\", "/");
+                model.url = System.IO.Path.Combine("https://zycs.bhteda.com/file", model.internalName).Replace("\\", "/");
 
 
                 IFormFile current = file;
@@ -70,7 +54,6 @@ namespace Dto.Service.IntellVolunteer
                     current.CopyTo((Stream)fileStream);
                     ((Stream)fileStream).Flush();
                 }
-
             }
             else
             {
@@ -103,7 +86,7 @@ namespace Dto.Service.IntellVolunteer
 
                 model.path = newpath;
                 //获取临时文件相对完整路径
-                model.url = System.IO.Path.Combine("https://bhteda.com/Volunteer/file", model.internalName).Replace("\\", "/");
+                model.url = System.IO.Path.Combine("https://zycs.bhteda.com/file", model.internalName).Replace("\\", "/");
                 model.bak1 = TypeID;
 
                 IFormFile current = file;

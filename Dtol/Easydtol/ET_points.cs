@@ -10,7 +10,7 @@ namespace Dtol.Easydtol
         public string tableName { get; set; }
         public string uid { get; set; }
         public string type { get; set; }
-        public int points { get; set; }
+        public double points { get; set; }
         public string Memo { get; set; }
         public string CreateUser { get; set; }
         public DateTime? CreateDate { get; set; }

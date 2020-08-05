@@ -192,9 +192,22 @@ namespace IntellVolunteer
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            //开发环境 生成swagger，生成环境不生成  2020724
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
+                //，启用中间件为生成的 JSON 文档和 Swagger UI 提供服务
+                // Enable middleware to serve generated Swagger as a JSON endpoint.
+                app.UseSwagger();
+
+                // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
+                // specifying the Swagger JSON endpoint.
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("./swagger/v1/swagger.json", "用户管理文档 V1");
+                    c.RoutePrefix = string.Empty;
+                });
             }
             else
             {
@@ -219,18 +232,6 @@ namespace IntellVolunteer
 
 
             // app.UseHttpsRedirection();
-
-            //，启用中间件为生成的 JSON 文档和 Swagger UI 提供服务
-            // Enable middleware to serve generated Swagger as a JSON endpoint.
-            app.UseSwagger();
-
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
-            // specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("./swagger/v1/swagger.json", "用户管理文档 V1");
-                c.RoutePrefix = string.Empty;
-            });
 
 
             //app.UseHttpsRedirection();

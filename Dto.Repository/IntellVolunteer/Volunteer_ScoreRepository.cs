@@ -68,7 +68,7 @@ namespace Dto.Repository.IntellVolunteer
             }
 
             var res = DbSet.Where(predicate).ToList();
-            int sums = 0;
+            double sums = 0;
             res.ForEach(o => { sums += o.Score; });
 
 

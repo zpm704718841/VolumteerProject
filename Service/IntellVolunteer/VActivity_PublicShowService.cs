@@ -63,84 +63,97 @@ namespace Dto.Service.IntellVolunteer
             VActivity_PublicShowAddResModel result = new VActivity_PublicShowAddResModel();
             VActivity_PublicShow show = _IMapper.Map<VActivity_PublicShowAddModel, VActivity_PublicShow>(showAddModel);
 
-            var VolunteerInfo = _IVolunteerInfoRepository.SearchInfoByID(showAddModel.VID);
-            if (VolunteerInfo == null)
+            if (string.IsNullOrEmpty(showAddModel.ContentID) || string.IsNullOrEmpty(showAddModel.VID) || 
+                string.IsNullOrEmpty(showAddModel.Address))
             {
                 result.AddCount = 0;
                 result.IsSuccess = false;
-                result.baseViewModel.Message = "上传公益秀基本信息失败";
+                result.baseViewModel.Message = "上传公益秀信息失败，参数为空";
                 result.baseViewModel.ResponseCode = 500;
-                return result;
             }
-
-            show.ID = Guid.NewGuid().ToString();
-            show.NickName = VolunteerInfo.Nickname;
-            show.Headimgurl = VolunteerInfo.Headimgurl;
-            show.CreateUser = showAddModel.VID;
-            show.CreateDate = DateTime.Now;
-            show.UpdateUser = showAddModel.VID;
-            show.UpdateDate = DateTime.Now;
-            show.Status = "0";
-            _IVActivity_PublicShowRepository.Add(show);
-            int a = _IVActivity_PublicShowRepository.SaveChanges();
-            if (a > 0)
+            else
             {
-                int c = 0;
-                //保存 公益秀图片
-                var AttachmentInfo = _IMapper.Map<List<VAttachmentAddViewModel>, List<VAttachment>>(showAddModel.VAttachmentAddList);
-                foreach (var item in AttachmentInfo)
+                var VolunteerInfo = _IVolunteerInfoRepository.SearchInfoByID(showAddModel.VID);
+                if (VolunteerInfo == null)
                 {
-                    item.ID = Guid.NewGuid().ToString();
-                    item.formid = show.ID;
-                    item.type = "PSTP";
-                    item.Status = "0";
-                    item.CreateUser = showAddModel.VID;
-                    item.CreateDate = DateTime.Now;
-                    _IVAttachmentRepository.Add(item);
-                    c = _IVAttachmentRepository.SaveChanges() + c;
+                    result.AddCount = 0;
+                    result.IsSuccess = false;
+                    result.baseViewModel.Message = "上传公益秀基本信息失败";
+                    result.baseViewModel.ResponseCode = 500;
+                    return result;
                 }
-                if (c == showAddModel.VAttachmentAddList.Count)
+
+                show.ID = Guid.NewGuid().ToString();
+                show.NickName = VolunteerInfo.Nickname;
+                show.Headimgurl = VolunteerInfo.Headimgurl;
+                show.CreateUser = showAddModel.VID;
+                show.CreateDate = DateTime.Now;
+                show.UpdateUser = showAddModel.VID;
+                show.UpdateDate = DateTime.Now;
+                show.Status = "0";
+                _IVActivity_PublicShowRepository.Add(show);
+                int a = _IVActivity_PublicShowRepository.SaveChanges();
+                if (a > 0)
                 {
-                    //提示信息：您成功上传公益秀，等待审核。
-                    Volunteer_MessageMiddle middle = new Volunteer_MessageMiddle();
-                    middle.Contents = "您上传标题为 "+ showAddModel.Title + " 公益秀，等待审核。";
+                    int c = 0;
+                    //保存 公益秀图片
+                    var AttachmentInfo = _IMapper.Map<List<VAttachmentAddViewModel>, List<VAttachment>>(showAddModel.VAttachmentAddList);
+                    foreach (var item in AttachmentInfo)
+                    {
+                        item.ID = Guid.NewGuid().ToString();
+                        item.formid = show.ID;
+                        item.type = "PSTP";
+                        item.Status = "0";
+                        item.CreateUser = showAddModel.VID;
+                        item.CreateDate = DateTime.Now;
+                        _IVAttachmentRepository.Add(item);
+                        c = _IVAttachmentRepository.SaveChanges() + c;
+                    }
+                    if (c == showAddModel.VAttachmentAddList.Count)
+                    {
+                        //提示信息：您成功上传公益秀，等待审核。
+                        Volunteer_MessageMiddle middle = new Volunteer_MessageMiddle();
+                        middle.Contents = "您上传标题为 " + showAddModel.Title + " 公益秀，等待审核。";
 
-                    Volunteer_Info volunteer_Info = _IVolunteerInfoRepository.SearchInfoByID(showAddModel.VID);
-                    middle.Name = volunteer_Info.Name;
-                    middle.VID = volunteer_Info.ID;
-                    middle.VNO = volunteer_Info.VNO;
+                        Volunteer_Info volunteer_Info = _IVolunteerInfoRepository.SearchInfoByID(showAddModel.VID);
+                        middle.Name = volunteer_Info.Name;
+                        middle.VID = volunteer_Info.ID;
+                        middle.VNO = volunteer_Info.VNO;
 
-                    Volunteer_Message message = _IMapper.Map<Volunteer_MessageMiddle, Volunteer_Message>(middle);
-                    message.ID = Guid.NewGuid().ToString();
-                    message.CreateDate = DateTime.Now;
-                    message.CreateUser = showAddModel.VID;
-                    message.Status = "0";
+                        Volunteer_Message message = _IMapper.Map<Volunteer_MessageMiddle, Volunteer_Message>(middle);
+                        message.ID = Guid.NewGuid().ToString();
+                        message.CreateDate = DateTime.Now;
+                        message.CreateUser = showAddModel.VID;
+                        message.Status = "0";
 
-                    _IVolunteer_MessageRepository.Add(message);
-                    int f = _IVolunteer_MessageRepository.SaveChanges();
+                        _IVolunteer_MessageRepository.Add(message);
+                        int f = _IVolunteer_MessageRepository.SaveChanges();
 
 
 
-                    result.AddCount = a;
-                    result.IsSuccess = true;
-                    result.baseViewModel.Message = "成功上传公益秀，等待审核。";
-                    result.baseViewModel.ResponseCode = 200;
+                        result.AddCount = a;
+                        result.IsSuccess = true;
+                        result.baseViewModel.Message = "成功上传公益秀，等待审核。";
+                        result.baseViewModel.ResponseCode = 200;
+                    }
+                    else
+                    {
+                        result.AddCount = 0;
+                        result.IsSuccess = false;
+                        result.baseViewModel.Message = "上传公益秀图片失败";
+                        result.baseViewModel.ResponseCode = 300;
+                    }
                 }
                 else
                 {
                     result.AddCount = 0;
                     result.IsSuccess = false;
-                    result.baseViewModel.Message = "上传公益秀图片失败";
-                    result.baseViewModel.ResponseCode = 300;
+                    result.baseViewModel.Message = "上传公益秀基本信息失败";
+                    result.baseViewModel.ResponseCode = 400;
                 }
             }
-            else
-            {
-                result.AddCount = 0;
-                result.IsSuccess = false;
-                result.baseViewModel.Message = "上传公益秀基本信息失败";
-                result.baseViewModel.ResponseCode = 400;
-            }
+
+
             return result;
         }
 
