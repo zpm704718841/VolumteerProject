@@ -223,7 +223,8 @@ namespace Dto.Service.IntellVolunteer
                 DateTime start = DateTime.Parse(claim_Info.StartDutyTime.ToString());
                 DateTime end = DateTime.Parse(claim_Info.EndDutyTime.ToString());
 
-                if (DateTime.Now > start.AddMinutes(-15) && DateTime.Now < end.AddMinutes(15))
+                if ((DateTime.Now >= start.AddMinutes(-15) && DateTime.Now <= start.AddMinutes(15) && AddViewModel.type=="in") ||
+                   (DateTime.Now >= end && DateTime.Now <= end.AddMinutes(15) && AddViewModel.type == "out"))
                 {
                     OndutyClaims_Info ondutyClaims = _claimsInfoRepository.GetByID(claim_Info.OndutyClaims_InfoId);
                     if (ondutyClaims != null)

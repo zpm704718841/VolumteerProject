@@ -21,6 +21,7 @@ using System.Net;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using Dtol.Easydtol;
+using SystemFilter.PublicFilter;
 
 namespace Dto.Service.IntellVolunteer
 {
@@ -96,6 +97,8 @@ namespace Dto.Service.IntellVolunteer
   
             foreach (var item in Infos)
             {
+                // 签退地址 （原bak1 字段20200911）
+                item.flag = item.bak1;
                 //判断该志愿者是否已经报名
                 VA_Sign Sign = _IVA_SignRepository.GetNewSign(VSearchViewModel.VID, item.ID);
                 if (Sign != null && Sign.ID != null)
@@ -398,10 +401,13 @@ namespace Dto.Service.IntellVolunteer
 
                 }
 
+                //姓名  解密 20200824
+                DEncrypt encrypt = new DEncrypt();
+
                 //提示信息：您已报名XXX活动，请按时参加
                 Volunteer_MessageMiddle middle = new Volunteer_MessageMiddle();
                 middle.Contents = "您已报名标题为 "+ activity.Title + " 活动，请按时参加";
-                middle.Name = VolunteerInfo.Name;
+                middle.Name = encrypt.Decrypt(VolunteerInfo.Name);
                 middle.VID = VolunteerInfo.ID;
                 middle.VNO = VolunteerInfo.VNO;
 
@@ -466,23 +472,63 @@ namespace Dto.Service.IntellVolunteer
 
             var VolunteerActivity = _IVolunteerActivityRepository.GetByID(AddViewModel.ContentID);
 
+            //20200910   增设 活动结束地址 并进行位置判断。
             if (!String.IsNullOrEmpty(AddViewModel.Checklongitude) && !String.IsNullOrEmpty(AddViewModel.Checklatitude))
             {
-                //进行地址判断 活动地址方圆500米可以签到
-                if (!String.IsNullOrEmpty(VolunteerActivity.longitude) && !String.IsNullOrEmpty(VolunteerActivity.latitude))
+                ///活动开始地址判断
+                if (AddViewModel.type == "in")
                 {
-                    var checks = CheckAddress(double.Parse(VolunteerActivity.longitude), double.Parse(VolunteerActivity.latitude), double.Parse(AddViewModel.Checklongitude), double.Parse(AddViewModel.Checklatitude), 0.5);
-                    if (!checks)
+                    //进行地址判断 活动地址方圆500米可以签到
+                    if (!String.IsNullOrEmpty(VolunteerActivity.longitude) && !String.IsNullOrEmpty(VolunteerActivity.latitude))
                     {
-                        count = 9;
+                        var checks = CheckAddress(double.Parse(VolunteerActivity.longitude), double.Parse(VolunteerActivity.latitude), double.Parse(AddViewModel.Checklongitude), double.Parse(AddViewModel.Checklatitude), 0.5);
+                        if (!checks)
+                        {
+                            count = 9;
+                            return count;
+                        }
+                    }
+                    else
+                    {
+                        count = 8;
                         return count;
                     }
                 }
-                else
+                //活动结束地址判断
+                else if (AddViewModel.type == "out")
                 {
-                    count = 8;
-                    return count;
+                    //进行地址判断 活动地址方圆500米可以签到
+                    if (!String.IsNullOrEmpty(VolunteerActivity.bak2) && !String.IsNullOrEmpty(VolunteerActivity.bak3))
+                    {
+                        var checks = CheckAddress(double.Parse(VolunteerActivity.bak2), double.Parse(VolunteerActivity.bak3), double.Parse(AddViewModel.Checklongitude), double.Parse(AddViewModel.Checklatitude), 0.5);
+                        if (!checks)
+                        {
+                            count = 3;
+                            return count;
+                        }
+                    }
+                    else
+                    {
+                        //进行地址判断 活动地址方圆500米可以签到
+                        if (!String.IsNullOrEmpty(VolunteerActivity.longitude) && !String.IsNullOrEmpty(VolunteerActivity.latitude))
+                        {
+                            var checks = CheckAddress(double.Parse(VolunteerActivity.longitude), double.Parse(VolunteerActivity.latitude), double.Parse(AddViewModel.Checklongitude), double.Parse(AddViewModel.Checklatitude), 0.5);
+                            if (!checks)
+                            {
+                                count = 3;
+                                return count;
+                            }
+                        }
+                        else
+                        {
+                            count = 8;
+                            return count;
+                        }
+                    }
+
                 }
+
+                  
             }
             else
             {
@@ -536,7 +582,7 @@ namespace Dto.Service.IntellVolunteer
                         ipointMiddle.ID = id;
                         ipointMiddle.uid = AddViewModel.VID;
                         ipointMiddle.points = score.Score;
-                        ipointMiddle.type = "VolunteerActivitySignIn";
+                        ipointMiddle.type = "VASignIn";
                         ipointMiddle.tableName = "TedaVolunteerDB.dbo.Volunteer_Score";
                         ipointMiddle.CreateUser = AddViewModel.VID;
                         ipointMiddle.CreateDate = DateTime.Now;
@@ -581,7 +627,7 @@ namespace Dto.Service.IntellVolunteer
                             ipointMiddle.ID = id;
                             ipointMiddle.uid = AddViewModel.VID;
                             ipointMiddle.points = double.Parse(jf.ToString());
-                            ipointMiddle.type = "VolunteerActivitySignOut";
+                            ipointMiddle.type = "VASignOut";
                             ipointMiddle.tableName = "TedaVolunteerDB.dbo.Volunteer_Score";
                             ipointMiddle.CreateUser = AddViewModel.VID;
                             ipointMiddle.CreateDate = DateTime.Now;
@@ -679,6 +725,9 @@ namespace Dto.Service.IntellVolunteer
             {
                 VolunteerActivity middle = new VolunteerActivity();
                 middle = _IVolunteerActivityRepository.GetByID(item.ToString());
+                
+                // 签退地址 （原bak1 字段20200911）
+                middle.flag = middle.bak1;
 
                 //判断该志愿者是否已经报名
                 VA_Sign Sign = _IVA_SignRepository.GetNewSign(VID, middle.ID);
@@ -954,118 +1003,201 @@ namespace Dto.Service.IntellVolunteer
                             }
                         }
                     }
+                    else
+                    {
+                        result.ResponseCode = 17;
+                        result.Message = "未在报名时段内";
+                    }
                 }
  
-                if (item.SignUpStime != null && item.SignOutEtime != null && DateTime.Now >= item.SignUpStime && DateTime.Now <= item.SignOutEtime)
+               
+                if (item.SignUpStime != null && item.SignOutEtime != null)
                 {
-                    //判断是否报名
-                    if (!String.IsNullOrEmpty(va_Sign.ID))
+                    if (DateTime.Now >= item.SignUpStime && DateTime.Now <= item.SignOutEtime)
                     {
-                        if (!String.IsNullOrEmpty(res.ID))
+                        //判断是否报名
+                        if (!String.IsNullOrEmpty(va_Sign.ID))
                         {
-                            if (res.type.Equals("in"))
+                            if (!String.IsNullOrEmpty(res.ID))
                             {
-                                result.ResponseCode = 3;
-                                result.Message = "上传现场图片";
-                            }
-                            else if (res.type.Equals("img"))
-                            {
-                                result.ResponseCode = 4;
-                                result.Message = "签退";
-                                //有签退 时间限制
-                                if (item.SignOutStime != null && item.SignOutEtime != null && (DateTime.Now < item.SignOutStime))
+                                if (res.type.Equals("in"))
                                 {
-                                    //判断是否正常 执行到签退操作
-                                    if (result.ResponseCode == 4)
-                                    {
-                                        result.ResponseCode = 41;
-                                        result.Message = "未到签退时间请稍后。";
-                                    }
+                                    result.ResponseCode = 3;
+                                    result.Message = "上传现场图片";
                                 }
-                                //有签退 时间限制
-                                if (item.SignOutStime != null && item.SignOutEtime != null && (DateTime.Now > item.SignOutEtime))
+                                else if (res.type.Equals("img"))
                                 {
-                                    //判断是否正常 执行到签退操作
-                                    if (result.ResponseCode == 4)
+                                    result.ResponseCode = 4;
+                                    result.Message = "签退";
+                                    //有签退 时间限制
+                                    if (item.SignOutStime != null && item.SignOutEtime != null && (DateTime.Now < item.SignOutStime))
                                     {
-                                        result.ResponseCode = 42;
-                                        result.Message = "已过签退时间，无法签退。";
+                                        //判断是否正常 执行到签退操作
+                                        if (result.ResponseCode == 4)
+                                        {
+                                            result.ResponseCode = 41;
+                                            result.Message = "未到签退时间请稍后。";
+                                        }
                                     }
-                                    else
+                                    //有签退 时间限制
+                                    if (item.SignOutStime != null && item.SignOutEtime != null && (DateTime.Now > item.SignOutEtime))
                                     {
-                                        result.ResponseCode = 31;
-                                        result.Message = "已到签退时间您未上传现场图片，无法进行签退操作。";
+                                        //判断是否正常 执行到签退操作
+                                        if (result.ResponseCode == 4)
+                                        {
+                                            result.ResponseCode = 42;
+                                            result.Message = "已过签退时间，无法签退。";
+                                        }
+                                        else
+                                        {
+                                            result.ResponseCode = 31;
+                                            result.Message = "已到签退时间您未上传现场图片，无法进行签退操作。";
+                                        }
                                     }
+
                                 }
-                           
-                            }
-                            else if (res.type.Equals("out"))
-                            {
-                                result.ResponseCode = 5;
-                                result.Message = "本次活动已完成，谢谢参与";
-                            }
-                        }
-                        else
-                        {
-
-
-                            //有签到 时间限制
-                            if (item.SignUpStime != null && item.SignUpEtime != null && (DateTime.Now < item.SignUpStime))
-                            {
-                                result.ResponseCode = 21;
-                                result.Message = "未到签到时间请稍后。";
-                            }
-                            //有签到 时间限制
-                            else if (item.SignUpStime != null && item.SignUpEtime != null && (DateTime.Now > item.SignUpEtime))
-                            {
-                                result.ResponseCode = 22;
-                                result.Message = "已过签到时间，无法签到，后续操作亦无法执行。";
+                                else if (res.type.Equals("out"))
+                                {
+                                    result.ResponseCode = 5;
+                                    result.Message = "本次活动已完成，谢谢参与";
+                                }
                             }
                             else
                             {
-                                //正常签到
-                                result.ResponseCode = 2;
-                                result.Message = "签到";
+                                //有签到 时间限制
+                                if (item.SignUpStime != null && item.SignUpEtime != null && (DateTime.Now < item.SignUpStime))
+                                {
+                                    result.ResponseCode = 21;
+                                    result.Message = "未到签到时间请稍后。";
+                                }
+                                //有签到 时间限制
+                                else if (item.SignUpStime != null && item.SignUpEtime != null && (DateTime.Now > item.SignUpEtime))
+                                {
+                                    result.ResponseCode = 22;
+                                    result.Message = "已过签到时间，无法签到，后续操作亦无法执行。";
+                                }
+                                else
+                                {
+                                    //正常签到
+                                    result.ResponseCode = 2;
+                                    result.Message = "签到";
+                                }
                             }
-                        }
-                    }
-                    else
-                    {
-                        if (DateTime.Now >= item.Stime)
-                        {
-                            result.ResponseCode = 13;
-                            result.Message = "报名已截止";
                         }
                         else
                         {
-                            result.ResponseCode = 12;
-                            result.Message = "我要报名";
-                        }
-                    }
-                }
-                if (item.Etime != null  &&  DateTime.Now > item.Etime)
-                {
-                    if (item.SignOutEtime != null)
-                    {
-                        if (!String.IsNullOrEmpty(res.ID))
-                        {
-                            if (res.type.Equals("in"))
+                            if (DateTime.Now >= item.Stime)
                             {
-                                result.ResponseCode = 3;
-                                result.Message = "上传现场图片";
+                                result.ResponseCode = 13;
+                                result.Message = "报名已截止";
                             }
-                            else if (res.type.Equals("img"))
+                            else
                             {
-                                result.ResponseCode = 4;
-                                result.Message = "签退";
+                                result.ResponseCode = 12;
+                                result.Message = "我要报名";
                             }
                         }
                     }
                     else
                     {
-                        result.ResponseCode = 15;
-                        result.Message = "活动已结束";
+                        //判断是否报名
+                        if (!String.IsNullOrEmpty(va_Sign.ID))
+                        {
+                            result.ResponseCode = 16;
+                            result.Message = "未到活动签到签退时间";
+                        }
+                        else
+                        {
+                            if (DateTime.Now >= item.Stime)
+                            {
+                                result.ResponseCode = 13;
+                                result.Message = "报名已截止";
+                            }
+                            else
+                            {
+                                result.ResponseCode = 12;
+                                result.Message = "我要报名";
+                            }
+                        }
                     }
+                }
+                else
+                {
+                    if (DateTime.Now < item.Stime)
+                    {
+                        if (!String.IsNullOrEmpty(va_Sign.ID))
+                        {
+                            //已报名
+                            result.ResponseCode = 1;
+                            result.Message = "已报名";
+                        }
+                        else
+                        {
+                            if (DateTime.Now >= item.Stime)
+                            {
+                                result.ResponseCode = 13;
+                                result.Message = "报名已截止";
+                            }
+                            else
+                            {
+                                result.ResponseCode = 12;
+                                result.Message = "我要报名";
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (item.Etime != null && DateTime.Now < item.Etime)
+                        {
+                            if (!String.IsNullOrEmpty(va_Sign.ID))
+                            {
+                                if (!String.IsNullOrEmpty(res.ID))
+                                {
+                                    if (res.type.Equals("in"))
+                                    {
+                                        result.ResponseCode = 3;
+                                        result.Message = "上传现场图片";
+                                    }
+                                    else if (res.type.Equals("img"))
+                                    {
+                                        result.ResponseCode = 4;
+                                        result.Message = "签退";
+                                    }
+                                    else if (res.type.Equals("out"))
+                                    {
+                                        result.ResponseCode = 5;
+                                        result.Message = "本次活动已完成，谢谢参与";
+                                    }
+                                }
+                                else
+                                {
+                                    result.ResponseCode = 2;
+                                    result.Message = "签到";
+                                }
+                            }
+                            else
+                            {
+                                if (DateTime.Now >= item.Stime)
+                                {
+                                    result.ResponseCode = 13;
+                                    result.Message = "报名已截止";
+                                }
+                                else
+                                {
+                                    result.ResponseCode = 12;
+                                    result.Message = "我要报名";
+                                }
+                            }
+
+                        }
+                        else
+                        {
+                            result.ResponseCode = 15;
+                            result.Message = "活动已结束";
+                        }
+
+                    }
+                   
                 }
             }
             else
@@ -1117,6 +1249,8 @@ namespace Dto.Service.IntellVolunteer
                 List<string> typeIDs = new List<string>();
                 foreach (var item in lists)
                 {
+                    // 签退地址 （原bak1 字段20200911）
+                    item.flag = item.bak1;
                     //判断该志愿者是否已经报名
                     VA_Sign Sign = _IVA_SignRepository.GetNewSign(VID, item.ID);
                     if (Sign != null && Sign.ID != null)
@@ -1317,15 +1451,19 @@ namespace Dto.Service.IntellVolunteer
                 _IVA_SignRepository.RemoveNew(sign);
                 int a = _IVA_SignRepository.SaveChanges();
                 if (a > 0)
-                {
+                {          
+                    //姓名  解密 20200824
+                    DEncrypt encrypt = new DEncrypt();
+
                     var VolunteerInfo = _IVolunteerInfoRepository.SearchInfoByID(AddViewModel.VID);
                     //提示信息：您已取消标题为 XXX 活动 
                     Volunteer_MessageMiddle middle = new Volunteer_MessageMiddle();
                     middle.Contents = "您已取消标题为 " + item.Title + " 活动。";
-                    middle.Name = VolunteerInfo.Name;
+                    middle.Name = encrypt.Decrypt(VolunteerInfo.Name);
                     middle.VID = VolunteerInfo.ID;
                     middle.VNO = VolunteerInfo.VNO;
 
+        
                     Volunteer_Message message = _IMapper.Map<Volunteer_MessageMiddle, Volunteer_Message>(middle);
                     message.ID = Guid.NewGuid().ToString();
                     message.CreateDate = DateTime.Now;

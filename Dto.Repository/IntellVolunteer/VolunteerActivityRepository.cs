@@ -218,8 +218,10 @@ namespace Dto.Repository.IntellVolunteer
             //predicate = predicate.And(p => p.Status.Equals("1"));
  
 
-            var result = DbSet.Where(predicate)
-                .OrderByDescending(o => o.CreateDate).ToList();
+            var result = DbSet.Where(predicate).OrderByDescending(o => o.CreateDate)
+              .Skip(1)
+             .Take(10)
+          .ToList();
 
             return result;
         }

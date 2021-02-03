@@ -161,6 +161,18 @@ namespace Dto.Repository.IntellVolunteer
             return vno;
         }
 
+
+        //验证是否有重复 志愿变化
+        public int CheckVNO(string vno)
+        {
+            var predicate = WhereExtension.True<Volunteer_Info>();
+            predicate = predicate.And(p => p.VNO.Equals(vno));
+            var result = DbSet.Where(predicate)
+                .OrderByDescending(o => o.CreateDate).ToList();
+           
+            return result.Count;
+        }
+
         #region 查询条件
         //根据条件查询用户
         private Expression<Func<Volunteer_Info, bool>> SearchVolunteerWhere(VolunteerSearchViewModel VSearchViewModel)

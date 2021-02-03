@@ -27,6 +27,8 @@ namespace Dto.IRepository.IntellVolunteer
         void UpdateByModel(VolunteerInfoUpdateViewModel viewModel);
 
         string GetMaxVNO();
+        //验证是否有重复 志愿变化
+        int CheckVNO(string vno);
 
         Volunteer_Info SearchInfoByID(string id);
 

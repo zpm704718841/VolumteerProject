@@ -284,6 +284,13 @@ namespace IntellVolunteer.Controllers
                 AddResModel.baseViewModel.Message = "签到地址不在活动范围500米内。";
                 AddResModel.baseViewModel.ResponseCode = 400;
             }
+            else if (Add_Count == 3)
+            {
+                AddResModel.IsSuccess = false;
+                AddResModel.AddCount = 0;
+                AddResModel.baseViewModel.Message = "签退地址不在活动范围500米内。";
+                AddResModel.baseViewModel.ResponseCode = 400;
+            }
             else
             {
                 AddResModel.IsSuccess = false;

@@ -58,19 +58,29 @@ namespace Dto.Service.IntellVolunteer
             }
  
             DEncrypt encrypt = new DEncrypt();
-            //再次获取  志愿者编号以免提交时出现重复编号
-            var vno = GetNewVNO();
+
             var user_Info = _IMapper.Map<VolunteerAddViewModel, Volunteer_Info>(VuserAddViewModel);
-            user_Info.VNO = vno;
+            
             user_Info.Status = "0";
             // 字段加密 20200521
             user_Info.Name = encrypt.Encrypt(user_Info.Name);
             user_Info.CertificateID = encrypt.Encrypt(user_Info.CertificateID);
             user_Info.Mobile = encrypt.Encrypt(user_Info.Mobile);
-
+            //再次获取  志愿者编号以免提交时出现重复编号
+            var vno = GetNewVNO();
+            user_Info.VNO = vno;
             //保存基本信息
             _IVolunteerInfoRepository.Add(user_Info);
             int a = _IVolunteerInfoRepository.SaveChanges();
+
+            //判断志愿者编号是否冲突  20200824
+            if (_IVolunteerInfoRepository.CheckVNO(user_Info.VNO) > 1)
+            {
+                var newinfo = _IVolunteerInfoRepository.SearchInfoByID(VuserAddViewModel.ID);
+                newinfo.VNO = GetNewVNO();
+                _IVolunteerInfoRepository.Update(newinfo);
+                _IVolunteerInfoRepository.SaveChanges();
+            }
 
 
             //保存完善信息（擅长技能、服务领域）

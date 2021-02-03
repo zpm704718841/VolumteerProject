@@ -123,7 +123,7 @@ namespace Dto.Service.IntellVolunteer
 
             //获取我的 常态化管控认领 情况 20200617
             List<MydutyClaim_Info> myduties = _mydutyClaimInfo.GetByUid(vidModel.VID);
-            myduties = myduties.Where(o => o.EndDutyTime > DateTime.Now && o.status == "1").OrderBy(o => o.StartDutyTime).ToList();
+            myduties = myduties.Where(o => DateTime.Parse(o.EndDutyTime.ToString()).AddMinutes(15) >= DateTime.Now && o.status == "1").OrderBy(o => o.StartDutyTime).ToList();
 
             foreach (var item in myduties)
             {
@@ -237,7 +237,7 @@ namespace Dto.Service.IntellVolunteer
             if (!String.IsNullOrEmpty(vidModel.Date))
             {
                 myduties = myduties.Where(o => DateTime.Parse(o.StartDutyTime.ToString()).ToString("yyyy-MM-dd") == vidModel.Date 
-                &&  o.EndDutyTime > DateTime.Now
+                && DateTime.Parse(o.EndDutyTime.ToString()).AddMinutes(15) >= DateTime.Now
                  && o.status == "1").OrderBy(o => o.StartDutyTime).ToList();
             }
             SearchByIDAnduidModel searchByID = new SearchByIDAnduidModel();
